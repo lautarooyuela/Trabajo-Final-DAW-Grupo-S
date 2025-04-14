@@ -1,221 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>IDW S.A - Reserva de Salones de Eventos Infantiles</title>
+    <link rel="stylesheet" href="estilos.css">
+    <meta name="description" content="IDW S.A. ofrece salones temáticos para fiestas infantiles. ¡Reserva tu salón hoy mismo!">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
+
     <header>
         <h1>IDW S.A - Reserva de Salones de Eventos Infantiles</h1> 
+        <br>
         <ul>
             <li><a href="index.html">Inicio</a></li>
             <li><a href="institucional.html">Información Institucional</a></li>
-            <li><a href="contacto.html">Información Contactos</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
         </ul>
+
+        <div class="contact-buttons">
+            <a href="https://wa.me/541161257362" class="contact-button"><i class="fab fa-whatsapp"></i></a>
+            <a href="tel:+541161257362" class="contact-button phone"><i class="fas fa-phone-alt"></i></a>
+            <a href="mailto:info@idwsa.com.ar" class="contact-button email"><i class="fas fa-envelope"></i></a>
+        </div>
     </header>
+
     <main>
-        <section>
-            <h2>Bienvenido a nuestro catalogo de salones infantiles</h2>
+        
+
+        <section class="carrusel">
+            <input type="radio" name="slider" id="slide1" checked>
+            <input type="radio" name="slider" id="slide2">
+            <input type="radio" name="slider" id="slide3">
+        
+            <div class="slider">
+                <div class="slide"><img src="img/pijamadas.jpeg" alt="Pijamadas"></div>
+                <div class="slide"><img src="img/camas.jpg" alt="Camas"></div>
+                <div class="slide"><img src="img/spa.jpg" alt="Spa"></div>
+            </div>
+        
+            <div class="navegacion">
+                <label for="slide1"></label>
+                <label for="slide2"></label>
+                <label for="slide3"></label>
+            </div>
+        </section>
+        <section class="bienvenida">
+            <h2>Bienvenido a nuestro catálogo de salones infantiles</h2>
             <p>Consulta nuestros servicios, solicita tus presupuestos</p>
         </section>
+        
 
-        <section>
-            <ol>
-                <li>
-                    <strong>"Alegría, fiestas infantiles" </strong>
-                    <p><strong>Dirección: Av.Monroe 355. CABA</strong></p>
-                    <br/>
-                    <img src="images/SALONalegria.jpg" alt="Salon de evento" width="300"/>
-                    <br/>
-                    <p>En un espacio colorido, seguro y muy alegre, "Alegría, fiestas infantiles" ofrece el ambiente perfecto para celebrar cumpleaños y eventos infantiles. Contamos con inflables, juegos, decoración temática, mesas adaptadas para todas las edades y un espacio cómodo para los adultos. ¡Viví momentos inolvidables en un lugar pensado para la felicidad de los chicos.</p>
-                    <p>Capacidad máxima: hasta 70 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
+        <section class="eventos-grid">
+            <div class="evento-card">
+                <img src="img/SALONalegria.jpg" alt="Salón de evento">
+                <div class="evento-info">
+                    <br>
+                    <strong>"Alegría, fiestas infantiles"</strong>
+                    <p>En un espacio colorido, seguro y muy alegre, "Alegría, fiestas infantiles" ofrece el ambiente perfecto para celebrar cumpleaños y eventos infantiles. Contamos con inflables, juegos, decoración temática, mesas adaptadas para todas las edades y un espacio cómodo para los adultos..</p>
+                    <a href="contacto.html#formulario-contacto" class="btn-presupuesto">Solicitar presupuesto</a>
+                </div>
+            </div>
+
+            <div class="evento-card">
+                <img src="img/spa.jpg" alt="Spa de princesas">
+                <div class="evento-info">
+                    <br>
                     <strong>"Spa de princesas"</strong>
-                    <p><strong>Dirección: Tte. Gral. Juan Domingo Perón 4190. CABA</strong></p>
+                    <p>Un mundo mágico de belleza y diversión. En nuestro exclusivo spa para niñas, cada detalle está pensado para que vivan una experiencia única como verdaderas princesas. ¡El lugar perfecto donde la fantasía y el relax se encuentran!.</p>
+                    <a href="contacto.html#formulario-contacto" class="btn-presupuesto">Solicitar presupuesto</a>
+                </div>
+            </div>
+
+            <div class="evento-card">
+                <img src="img/pijamadas.jpeg" alt="Pijamadas">
+                <div class="evento-info">
                     <br>
-                    <img src="images/spa.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p> Un mundo mágico de belleza y diversión. En nuestro exclusivo spa para niñas, cada detalle está pensado para que vivan una experiencia única como verdaderas princesas. Un espacio encantador, con estaciones de belleza, coronas, luces tenues y todo en tonos rosa para una jornada llena de mimos, juegos y alegría. Ideal para cumpleaños o días especiales. ¡El lugar perfecto donde la fantasía y el relax se encuentran!.</p>
-                    <p>Capacidad máxima: hasta 30 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
                     <strong>"Pijamadas de ensueño"</strong>
-                    <p><strong>Dirección: Av. Pedro Goyena 369. CABA</strong></p>
+                    <p>Nuestro salón se convierte en un mundo de fantasía decorado con carpas tipi, luces cálidas, almohadones suaves y decoración temática a elección del homenajeado. Nuestro salón es el lugar ideal donde el relax se encuentra con la magia!.</p>
+                    <a href="contacto.html#formulario-contacto" class="btn-presupuesto">Solicitar presupuesto</a>
+                </div>
+            </div>
+
+            <div class="evento-card">
+                <img src="img/canchafiestas.jpg" alt="Cancha de Fiestas">
+                <div class="evento-info">
                     <br>
-                    <img src="images/Pijamadas.jpeg" alt="Salon de evento" width="300">
-                    <br>
-                    <p>Nuestro salón se convierte en un mundo de fantasia decorado con carpas tipi, luces cálidas, almohadones suaves y decoración temática a elección del homenajeado.</p>
-                    <p>Capacidad máxima: hasta 30 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
                     <strong>"Festejos de gol"</strong>
-                    <p><strong>Dirección: Uspallata 3400. CABA</strong></p>
+                    <p>¡El cumple ideal para pequeños fanáticos del deporte!. Contamos con una cancha techada de césped sintético, totalmente equipada y segura, perfecta para festejar cumpleaños a puro gol, para que los chicos disfruten al máximo con sus amigos.</p>
+                    <a href="contacto.html#formulario-contacto" class="btn-presupuesto">Solicitar presupuesto</a>
+                </div>
+            </div>
+
+            <div class="evento-card">
+                <img src="img/inflables.jpg" alt="Inflables">
+                <div class="evento-info">
                     <br>
-                    <img src="images/canchafiestas.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p>¡El cumple ideal para pequeños fanáticos del deporte!. Contamos con una cancha techada de césped sintético, totalmente equipada y segura, perfecta para festejar cumpleaños a puro gol. Organizamos partidos, juegos y actividades deportivas para que los chicos disfruten al máximo con sus amigos. ¡Diversión garantizada y energía a full en un espacio pensado para ellos!.</p>
-                    <p>Capacidad máxima: hasta 40 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
                     <strong>"En un cuento, salón de fiestas"</strong>
-                    <p><strong>Dirección: Pi y Margall 750. CABA</strong></p>
+                    <p>Nuestro salón cuenta con una amplia variedad de inflables temáticos para que los niños salten, trepen y se diviertan sin parar. Espacios coloridos, seguros y súper entretenidos que transforman cualquier cumpleaños en una aventura inolvidable. ¡La combinación perfecta de juego, movimiento y alegría!</p>
+                    <a href="contacto.html#formulario-contacto" class="btn-presupuesto">Solicitar presupuesto</a>
+                </div>
+            </div>
+
+            <div class="evento-card">
+                <img src="img/selva.png" alt="Selva">
+                <div class="evento-info">
                     <br>
-                    <img src="images/inflables.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p> Nuestro salón cuenta con una amplia variedad de inflables temáticos para que los niños salten, trepen y se diviertan sin parar. Espacios coloridos, seguros y súper entretenidos que transforman cualquier cumpleaños en una aventura inolvidable. ¡La combinación perfecta de juego, movimiento y alegría!.</p>
-                    <p>Capacidad máxima: hasta 100 personas.</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
-                    <strong>"Mundo jurásico"</strong>
-                    <p><strong>Dirección: Pichincha 1890. CABA</strong></p>
-                    <br>
-                    <img src="images/dinos.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p> ¡Un viaje al periodo Jurásico lleno de aventuras!.Sumergite en un mundo prehistórico único, rodeado de dinosaurios gigantes, vegetación selvática y escenarios que fascinan a chicos y grandes. Nuestro salón temático es perfecto para pequeños exploradores que sueñan con una fiesta jurásica inolvidable. ¡Viví una experiencia llena de rugidos, diversión y magia!.</p>
-                    <p>Capacidad máxima: hasta 100 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
                     <strong>"Aventuras de la selva"</strong>
-                    <p><strong>Dirección: Esteban de Luca 2151. CABA</strong></p>
+                    <p>Viví una fiesta inolvidable rodeado de naturaleza, animales salvajes y una ambientación selvática que despierta la imaginación. está diseñado para que los peques se sientan como verdaderos exploradores, con juegos, espacios temáticos y mucha diversión.</p>
+                    <a href="contacto.html#formulario-contacto" class="btn-presupuesto">Solicitar presupuesto</a>
+                </div>
+            </div>
+
+            <div class="evento-card">
+                <img src="img/dinos.jpg" alt="Dinos">
+                <div class="evento-info">
                     <br>
-                    <img src="images/selva.png" alt="Salon de evento" width="300">
-                    <br>
-                    <p> Viví una fiesta inolvidable rodeado de naturaleza, animales salvajes y una ambientación selvática que despierta la imaginación. Nuestro salón está diseñado para que los peques se sientan como verdaderos exploradores, con juegos, espacios temáticos y mucha diversión entre lianas, árboles y criaturas de la selva. ¡La diversión está asegurada!.</p>
-                    <p>Capacidad máxima: hasta 120 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-            </ol>
+                    <strong>"Mundo jurásico"</strong>
+                    <p>¡Un viaje al periodo Jurásico lleno de aventuras!. Sumérgete en un mundo prehistórico único, rodeado de dinosaurios gigantes, vegetación selvática y escenarios que fascinan a chicos y grandes. ¡Viví una experiencia llena de rugidos, diversión y magia!.</p>
+                    <a href="contacto.html#formulario-contacto" class="btn-presupuesto">Solicitar presupuesto</a>
+                </div>
+            </div>
+
         </section>
     </main>
+
     <footer>
-        <p>Seguinos en nuestras redes sociales:</p>
         <ul>
-          <li><a href="https://www.facebook.com/idw" target="_blank">Facebook</a></li>
-          <li><a href="https://www.instagram.com/idwsa" target="_blank">Instagram</a></li>
-          <li><a href="https://wa.me/5491161257362" target="_blank">WhatsApp</a></li>
-        </ul>      
-        <p>&copy;IDW S.A -Todos los derechos reservados 2025</p>
-        <p>Contacto: info@idwsa.com.ar | Tel: 54 9 1161257362</p>
-    </footer>
-</body>
-</html>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <header>
-        <h1>IDW S.A - Reserva de Salones de Eventos Infantiles</h1> 
-        <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="institucional.html">Información Institucional</a></li>
-            <li><a href="contacto.html">Información Contactos</a></li>
+            <li><a href="https://facebook.com" target="_blank">Facebook</a></li>
+            <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
+            <li><a href="https://wa.me/541161257362" target="_blank">WhatsApp</a></li>
         </ul>
-    </header>
-    <main>
-        <section>
-            <h2>Bienvenido a nuestro catalogo de salones infantiles</h2>
-            <p>Consulta nuestros servicios, solicita tus presupuestos</p>
-        </section>
-
-        <section>
-            <ol>
-                <li>
-                    <strong>"Alegría, fiestas infantiles" </strong>
-                    <p><strong>Dirección: Av.Monroe 355. CABA</strong></p>
-                    <br/>
-                    <img src="images/SALONalegria.jpg" alt="Salon de evento" width="300"/>
-                    <br/>
-                    <p>En un espacio colorido, seguro y muy alegre, "Alegría, fiestas infantiles" ofrece el ambiente perfecto para celebrar cumpleaños y eventos infantiles. Contamos con inflables, juegos, decoración temática, mesas adaptadas para todas las edades y un espacio cómodo para los adultos. ¡Viví momentos inolvidables en un lugar pensado para la felicidad de los chicos.</p>
-                    <p>Capacidad máxima: hasta 70 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
-                    <strong>"Spa de princesas"</strong>
-                    <p><strong>Dirección: Tte. Gral. Juan Domingo Perón 4190. CABA</strong></p>
-                    <br>
-                    <img src="images/spa.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p> Un mundo mágico de belleza y diversión. En nuestro exclusivo spa para niñas, cada detalle está pensado para que vivan una experiencia única como verdaderas princesas. Un espacio encantador, con estaciones de belleza, coronas, luces tenues y todo en tonos rosa para una jornada llena de mimos, juegos y alegría. Ideal para cumpleaños o días especiales. ¡El lugar perfecto donde la fantasía y el relax se encuentran!.</p>
-                    <p>Capacidad máxima: hasta 30 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
-                    <strong>"Pijamadas de ensueño"</strong>
-                    <p><strong>Dirección: Av. Pedro Goyena 369. CABA</strong></p>
-                    <br>
-                    <img src="images/Pijamadas.jpeg" alt="Salon de evento" width="300">
-                    <br>
-                    <p>Nuestro salón se convierte en un mundo de fantasia decorado con carpas tipi, luces cálidas, almohadones suaves y decoración temática a elección del homenajeado.</p>
-                    <p>Capacidad máxima: hasta 30 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
-                    <strong>"Festejos de gol"</strong>
-                    <p><strong>Dirección: Uspallata 3400. CABA</strong></p>
-                    <br>
-                    <img src="images/canchafiestas.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p>¡El cumple ideal para pequeños fanáticos del deporte!. Contamos con una cancha techada de césped sintético, totalmente equipada y segura, perfecta para festejar cumpleaños a puro gol. Organizamos partidos, juegos y actividades deportivas para que los chicos disfruten al máximo con sus amigos. ¡Diversión garantizada y energía a full en un espacio pensado para ellos!.</p>
-                    <p>Capacidad máxima: hasta 40 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
-                    <strong>"En un cuento, salón de fiestas"</strong>
-                    <p><strong>Dirección: Pi y Margall 750. CABA</strong></p>
-                    <br>
-                    <img src="images/inflables.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p> Nuestro salón cuenta con una amplia variedad de inflables temáticos para que los niños salten, trepen y se diviertan sin parar. Espacios coloridos, seguros y súper entretenidos que transforman cualquier cumpleaños en una aventura inolvidable. ¡La combinación perfecta de juego, movimiento y alegría!.</p>
-                    <p>Capacidad máxima: hasta 100 personas.</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
-                    <strong>"Mundo jurásico"</strong>
-                    <p><strong>Dirección: Pichincha 1890. CABA</strong></p>
-                    <br>
-                    <img src="images/dinos.jpg" alt="Salon de evento" width="300">
-                    <br>
-                    <p> ¡Un viaje al periodo Jurásico lleno de aventuras!.Sumergite en un mundo prehistórico único, rodeado de dinosaurios gigantes, vegetación selvática y escenarios que fascinan a chicos y grandes. Nuestro salón temático es perfecto para pequeños exploradores que sueñan con una fiesta jurásica inolvidable. ¡Viví una experiencia llena de rugidos, diversión y magia!.</p>
-                    <p>Capacidad máxima: hasta 100 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-                <li>
-                    <strong>"Aventuras de la selva"</strong>
-                    <p><strong>Dirección: Esteban de Luca 2151. CABA</strong></p>
-                    <br>
-                    <img src="images/selva.png" alt="Salon de evento" width="300">
-                    <br>
-                    <p> Viví una fiesta inolvidable rodeado de naturaleza, animales salvajes y una ambientación selvática que despierta la imaginación. Nuestro salón está diseñado para que los peques se sientan como verdaderos exploradores, con juegos, espacios temáticos y mucha diversión entre lianas, árboles y criaturas de la selva. ¡La diversión está asegurada!.</p>
-                    <p>Capacidad máxima: hasta 120 personas</p>
-                    <p><strong>Solicitar presupuesto</strong></p>
-                </li>
-            </ol>
-        </section>
-    </main>
-    <footer>
-        <p>Seguinos en nuestras redes sociales:</p>
-        <ul>
-          <li><a href="https://www.facebook.com/idw" target="_blank">Facebook</a></li>
-          <li><a href="https://www.instagram.com/idwsa" target="_blank">Instagram</a></li>
-          <li><a href="https://wa.me/5491161257362" target="_blank">WhatsApp</a></li>
-        </ul>      
-        <p>&copy;IDW S.A -Todos los derechos reservados 2025</p>
-        <p>Contacto: info@idwsa.com.ar | Tel: 54 9 1161257362</p>
+        <div class="copy">
+            <p>©IDW S.A - Todos los derechos reservados 2025</p>
+            <p>Contacto: info@idwsa.com.ar | Tel: +54 9 1161257362</p>
+        </div>
     </footer>
+
 </body>
 </html>
-

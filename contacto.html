@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacto</title>
+    <link rel="stylesheet" href="estilos.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<header>
+
+    <h1>Contacto
+         </h1>
+    <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="institucional.html">Informacion institucional</a></li>
+        <li><a href="contacto.html" class="activo">Contacto</a></li>
+    </ul>
+</header>
+
+<main>
+    <h2>Contacto</h2>
+    <p>¿Querés hacer un pedido o tenés alguna consulta? Completá el siguiente formulario y te responderemos a la brevedad.</p>
+
+    <form action="#" method="post">
+        <label for="nombre">Nombre <span class="requerido">*</span></label>
+        <input type="text" id="nombre" name="nombre" required aria-required="true" placeholder="Escribí tu nombre completo">
+
+        <label for="email">Correo electrónico <span class="requerido">*</span></label>
+        <input type="email" id="email" name="email" required aria-required="true" placeholder="ejemplo@correo.com">
+
+        <label for="mensaje">Mensaje <span class="requerido">*</span></label>
+        <textarea id="mensaje" name="mensaje" rows="5" required aria-required="true" placeholder="Contanos qué necesitás o qué querés pedir..."></textarea>
+
+        <button type="submit">Enviar mensaje</button>
+    </form>
+</main>
+
+<footer>
+    <ul>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">WhatsApp</a></li>
+    </ul>
+    <p>&copy; 2025 Mi Marca. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>
