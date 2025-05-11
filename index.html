@@ -17,33 +17,59 @@
    
 </head>
 
-<body>
-    
-    
+<body>  
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
 
-<header class="encabezado-principal">
-    <img src="Img/logo.jpg" class="logo" alt="Logo">
+<!-- Nueva barra de navegacion-->
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary" style="height: 70px;">
+    <div class="container">
 
-    <div class="contenido-encabezado">
-      <h1>IDW S.A - Reserva de Salones de Eventos Infantiles</h1>
-      <nav>
-        <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="institucional.html">Información Institucional</a></li>
-          <li><a href="contacto.html">Contacto</a></li>
+      <a href="index.html" class="navbar-brand mx-auto d-flex align-items-center justify-content-center" style="height: 70px;">
+       <img src="img/logo.jpg" alt="Logo" style="height: 48px;" class="me-2 align-middle">
+       <span class="fs-4 align-middle">IDW S.A.</span>
+      </a>
+     
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav gap-4">
+          <li class="nav-item">
+            <a class="nav-link fs-5 px-2 active" href="index.html">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fs-5 px-2" href="institucional.html">Información Institucional</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fs-5 px-2" href="contacto.html">Contacto</a>
+          </li>
         </ul>
-      </nav>
+      </div>
+
     </div>
-  </header>
+  </nav>
+</header>
+
+<div class="contact-buttons">
+    <a href="https://wa.me/541161257362" class="btn btn-outline-success mb-2 rounded-circle d-flex align-items-center justify-content-center">
+        <i class="fab fa-whatsapp text-success"></i>
+    </a>
+    <a href="tel:+541161257362" class="btn btn-outline-primary mb-2 rounded-circle d-flex align-items-center justify-content-center">
+        <i class="fas fa-phone-alt text-primary"></i>
+    </a>
+    <a href="mailto:info@idwsa.com.ar" class="btn btn-outline-danger mb-2 rounded-circle d-flex align-items-center justify-content-center">
+        <i class="fas fa-envelope text-danger"></i>
+    </a>
+</div>
+
   
-  
-  
-  
-<div class="position-fixed bottom-0 end-0 p-3">
+<!--<div class="position-fixed bottom-0 end-0 p-3">
     <a href="https://wa.me/541161257362" class="btn btn-outline-success mb-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
         <i class="fab fa-whatsapp text-success" style="font-size: 24px;"></i>
     </a>
@@ -53,7 +79,7 @@
     <a href="mailto:info@idwsa.com.ar" class="btn btn-outline-danger mb-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
         <i class="fas fa-envelope text-danger" style="font-size: 24px;"></i>
     </a>
-</div>
+</div>--!>
 
 <main>
     <!-- Carrusel con bootstrap -->
@@ -105,6 +131,7 @@
                             <img src="img/SALONalegria.jpg" class="card-img-top" alt="Salón Alegría">
                             <div class="card-body">
                                 <h5 class="card-title">"Alegría, fiestas infantiles"</h5>
+                                <p class= "card-text">*Dirección: Monroe 902- CABA </p>
                                 <p class="card-text">Espacio colorido, seguro y alegre para celebrar cumpleaños y eventos infantiles.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -117,6 +144,7 @@
                             <img src="img/spa.jpg" class="card-img-top" alt="Spa de princesas">
                             <div class="card-body">
                                 <h5 class="card-title">"Spa de princesas"</h5>
+                                <p class= "card-text">*Dirección: Av.Alvarez Thomas 1615 - CABA </p>
                                 <p class="card-text">Un mundo mágico de belleza y diversión para las pequeñas princesas.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -129,6 +157,7 @@
                             <img src="img/pijamadas.jpeg" class="card-img-top" alt="Pijamadas temáticas">
                             <div class="card-body">
                                 <h5 class="card-title">"Pijamadas de ensueño"</h5>
+                                <p class= "card-text">*Dirección: Varela 1301 - CABA </p>
                                 <p class="card-text">Decoración mágica con luces y carpas tipi para una experiencia inolvidable.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -141,6 +170,7 @@
                             <img src="img/canchafiestas.jpg" class="card-img-top" alt="Cancha techada">
                             <div class="card-body">
                                 <h5 class="card-title">"Festejos de gol"</h5>
+                                <p class= "card-text">*Dirección: Av.Tte.Gral Perón 4190 - CABA </p>
                                 <p class="card-text">Cancha techada con césped sintético para cumpleaños deportivos.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -153,6 +183,7 @@
                             <img src="img/inflables.jpg" class="card-img-top" alt="Salón con inflables">
                             <div class="card-body">
                                 <h5 class="card-title">"En un cuento, salón de fiestas"</h5>
+                                <p class= "card-text">*Dirección: Av.Pueyrredón 1640 - CABA </p>
                                 <p class="card-text">Inflables temáticos, colores y diversión garantizada.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -165,6 +196,7 @@
                             <img src="img/selva.png" class="card-img-top" alt="Fiesta temática de selva">
                             <div class="card-body">
                                 <h5 class="card-title">"Aventuras de la selva"</h5>
+                                <p class= "card-text">*Dirección: Av.Belgrano 2975 - CABA </p>
                                 <p class="card-text">Ambientación selvática para que los niños se conviertan en exploradores.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -177,6 +209,7 @@
                             <img src="img/dinos.jpg" class="card-img-top" alt="Mundo jurásico para niños">
                             <div class="card-body">
                                 <h5 class="card-title">"Mundo jurásico"</h5>
+                                <p class= "card-text">*Dirección: Pi Margall 750 - CABA </p>
                                 <p class="card-text">Viaje prehistórico con dinosaurios gigantes y escenarios mágicos.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -189,6 +222,7 @@
                             <img src="img/Adrenalina.jpg" class="card-img-top" alt="Zona de juegos adrenalina">
                             <div class="card-body">
                                 <h5 class="card-title">"Adrenalina"</h5>
+                                <p class= "card-text">*Dirección: Av.Cerviño 3356 - CABA </p>
                                 <p class="card-text">Espacio lleno de juegos y desafíos que despiertan la adrenalina y la diversión en cada niño a partir de los 6 años.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -200,7 +234,8 @@
                         <div class="card h-100">
                             <img src="img/festejosSelva.jpg" class="card-img-top" alt="Zona de juegos adrenalina">
                             <div class="card-body">
-                                <h5 class="card-title"> ¡Festejá en la selva!"</h5>
+                                <h5 class="card-title"> "¡Festejá en la selva!"</h5>
+                                <p class= "card-text">*Dirección: Gral.Urquiza 609 - CABA </p>
                                 <p class="card-text">¡Viví una experiencia salvajemente divertida!
                                     Sumergite en una aventura llena de colores, lianas y animales de la jungla.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>

@@ -126,7 +126,7 @@ body {
 }
 
   
-
+header institucional
 header {
     background-color: #f4cfdd;
     color: #827373;
@@ -527,7 +527,46 @@ input[type="radio"] {
     transform: scale(1.3); 
 }
 
+.contact-buttons {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
+.contact-buttons .btn {
+    width: 55px;
+    height: 55px;
+    font-size: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.contact-buttons .btn:hover {
+    transform: scale(1.1);
+}
+
+/* Responsivo */
+@media (max-width: 576px) {
+    .contact-buttons {
+        flex-direction: row;
+        bottom: 20px;
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    .contact-buttons .btn {
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+    }
+}
+
+
+/*
 .contact-buttons {
     position: fixed;
     bottom: 20px;
@@ -566,7 +605,7 @@ input[type="radio"] {
 .contact-button i {
     font-size: 30px;
 }
-
+*/
 
 .imagen-contenedor {
     position: relative;
