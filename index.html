@@ -44,6 +44,10 @@
           <li class="nav-item">
             <a class="nav-link fs-5 px-2" href="contacto.html">Contacto</a>
           </li>
+          <!--Opcion de Login-->
+          <li class="nav-item">
+            <a class="nav-link fs-5 px-2" href="login.html">Login</a>
+          </li>
         </ul>
       </div>
 
@@ -190,7 +194,7 @@
                                 <h5 class="card-title">"Aventuras de la selva"</h5>
                                 <p class= "card-text">
                                     <i class="fas fa-map-marker-alt text-dark me-1"></i>
-                                    <a href="https://www.google.com/maps/search/?api=1&query=Av.Belgrano+2975+CABA" target="_blank"> Av. Belgrano 2975 - CABA </a> </p>
+                                    git<a href="https://www.google.com/maps/search/?api=1&query=Av.Belgrano+2975+CABA" target="_blank"> Av. Belgrano 2975 - CABA </a> </p>
                                 <p class="card-text">Ambientación selvática para que los niños se conviertan en exploradores.</p>
                                 <a href="contacto.html#formulario-contacto" class="btn btn-primary">Solicitar presupuesto</a>
                             </div>
@@ -243,7 +247,123 @@
                         </div>
                     </div>
         
-                </div> 
+                </div>
+
+<script>
+  // Proteccion de acceso a administracion de salones
+  const seccionAdmin = document.querySelector('section.container.my-5');
+  if (sessionStorage.getItem("logueado") !== "true") {
+    if (seccionAdmin) {
+      seccionAdmin.style.display = "none";
+    }
+  }
+</script>
+
+<!-- Formulario de alta de salones-->
+<div id="adminSection" style="display: none;">
+<section class="container my-5">
+<h3>Administrar Salones</h3>
+<table id="tablaSalones" class="table table-bordered">
+  <form id="formSalon" class="row g-3">
+    <input type="hidden" id="salonId">
+    <div class="col-md-6">
+      <label class="form-label">Nombre</label>
+      <input type="text" class="form-control" id="nombre" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Dirección</label>
+      <input type="text" class="form-control" id="direccion" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Link de Google Maps</label>
+      <input type="url" class="form-control" id="mapa" optional>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Imagen (URL)</label>
+      <input type="url" class="form-control" id="imagen" optional>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Descripción</label>
+      <textarea class="form-control" id="descripcion" rows="2" required></textarea>
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>  
+  </form>
+  </div>
+
+  <!-- Tabla -->
+   <h3 class=" mt-5">Lista de salones</h3>
+  <!-- <table class=" "table table-strip mt-3" id=""tablaSalones""> Esto lo puso la profe pero no funciona fijate Tami
+  <!--<table id="tablaSalones" class="table table-bordered mt-4">-->
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Dirección</th>
+        <th>Descripción</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</table>
+</section>
+
+<script>
+  // Mostrar sección de administración solo si el usuario está logueado
+  window.addEventListener("DOMContentLoaded", function () {
+    const adminSection = document.getElementById("adminSection");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (sessionStorage.getItem("logueado") === "true") {
+      adminSection.style.display = "block"; // mostrar admin
+      if (logoutBtn) logoutBtn.style.display = "block"; // mostrar cerrar sesión
+    } else {
+      adminSection.style.display = "none"; // ocultar admin
+      if (logoutBtn) logoutBtn.style.display = "none";
+    }
+  });
+</script>
+
+
+ <!-- Inicializo  -->
+  <script type="module">
+  import { inicializarLocalStorage } from './altasalon.js';
+  import { agregarSalon, renderizarSalones, obtenerSalones, guardarSalones } from './accionessalon.js';
+
+  inicializarLocalStorage();
+  renderizarSalones();
+
+  document.getElementById("formSalon").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const salon = {
+      nombre: document.getElementById("nombre").value,
+      direccion: document.getElementById("direccion").value,
+      mapa: document.getElementById("mapa").value,
+      descripcion: document.getElementById("descripcion").value,
+      imagen: document.getElementById("imagen").value
+    };
+
+    agregarSalon(salon);
+    this.reset();
+    renderizarSalones();
+    renderizarTablaSalones();
+  });
+
+  // Mostrar tabla si está logueado
+if (sessionStorage.getItem("logueado") === "true") {
+  renderizarTablaSalones();
+}
+</script>
+
+<script type="module">
+  import { inicializarLocalStorage } from './js/altasalon.js';
+
+  // Inicializa el localStorage si aún no está cargado
+  inicializarLocalStorage();
+</script>
+
+
             </main>
         </section>
     <footer class="container mt-4">
@@ -260,6 +380,7 @@
         Tel: <a href="tel:+5491161257362">+54 9 1161257362</a>
       </p>
     </div>
+
   </footer>    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
