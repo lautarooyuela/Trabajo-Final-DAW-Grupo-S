@@ -45,10 +45,10 @@
       const usuario = document.getElementById("usuario").value;
       const clave = document.getElementById("clave").value;
 
-      // Usuario y contraseña establecidos
+      
       if (usuario === "admin" && clave === "1909") {
         sessionStorage.setItem("logueado", "true");
-        window.location.href = "admin_salones.html"; // Redirigir a admin_salones.html
+        window.location.href = "admin_salones.html"; 
         alert ("Usuario identificado con exito")
       } else {
         alert ("Usuario y/o contraseña incorrecta. Intente nuevamente")
