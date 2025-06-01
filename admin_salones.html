@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Salones - IDW S.A.</title>
+    <link rel="stylesheet" href="estilos.css"> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        
+        .feedback-message {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border-color: #badbcc;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #842029;
+            border-color: #f5c2c7;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #cce5ff;
+        }
+        .card-admin {
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .btn-warning, .btn-danger, .btn-secondary { 
+            margin-left: 0.5rem;
+        }
+        
+        .salon-table-img {
+            width: 80px;
+            height: 60px;
+            border-radius: 4px;
+            object-fit: cover; 
+            display: block;
+            margin: auto; 
+        }
+        .salon-table-no-img {
+            font-size: 0.8rem;
+            display: block;
+            text-align: center;
+            color: #6c757d; 
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary" style="height: 70px;">
+            <div class="container">
+                <a href="index.html" class="navbar-brand d-flex align-items-center">
+                    <span class="fs-4 align-middle">IDW S.A. - Admin</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAdmin"
+                    aria-controls="navbarNavAdmin" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNavAdmin">
+                    <ul class="navbar-nav gap-3">
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 px-2" href="index.html"><i class="fas fa-home me-1"></i>Inicio Sitio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 px-2" href="login.html" onclick="sessionStorage.removeItem('logueado');">
+                                <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-4">
+        <h2 class="mb-4 text-center">Administración de Salones</h2>
+        
+        <div id="feedbackContainer" class="mb-3"></div>
+
+        <section class="my-4 card card-admin p-3 p-md-4">
+            <h3 class="mb-3">Administrar Salón</h3>
+            <form id="formSalon" class="row g-3">
+                <input type="hidden" id="salonId">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label">Nombre del Salón</label>
+                    <input type="text" class="form-control" id="nombre" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="direccion" class="form-label">Dirección Completa</label>
+                    <input type="text" class="form-control" id="direccion" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="mapa" class="form-label">Link de Google Maps (URL)</label>
+                    <input type="url" class="form-control" id="mapa" placeholder="https://maps.app.goo.gl/ejemplo">
+                </div>
+                <div class="col-md-6">
+                    <label for="imagen" class="form-label">Imagen (URL)</label>
+                    <input type="url" class="form-control" id="imagen" placeholder="https://ejemplo.com/imagen.jpg">
+                </div>
+                <div class="col-12">
+                    <label for="descripcion" class="form-label">Descripción Detallada</label>
+                    <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+                </div>
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Guardar Salón</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="limpiarFormulario()">
+                        <i class="fas fa-eraser me-1"></i>Limpiar Formulario
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="mt-5">
+            <h3 class="mb-3">Lista de Salones Registrados</h3>
+            <div class="table-responsive">
+                <table id="tablaSalones" class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 100px; text-align: center;">Imagen</th>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Descripción</th>
+                            <th style="width: 200px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="container mt-5 py-4 border-top">
+        <ul class="list-inline text-center mb-2">
+            <li class="list-inline-item"><a href="https://facebook.com" target="_blank" class="text-decoration-none">Facebook</a></li>
+            <li class="list-inline-item"><a href="https://instagram.com" target="_blank" class="text-decoration-none">Instagram</a></li>
+            <li class="list-inline-item"><a href="https://wa.me/541161257362" target="_blank" class="text-decoration-none">WhatsApp</a></li>
+        </ul>
+        <div class="text-center text-muted">
+            <p class="mb-0">©IDW S.A - Todos los derechos reservados 2025</p>
+        </div>
+    </footer>
+
+ <script type="module">
+    import { inicializarLocalStorage } from './altasalon.js';
+    import { obtenerSalones, guardarSalones } from './accionessalon.js';
+
+    const formSalon = document.getElementById("formSalon");
+    const salonIdInput = document.getElementById("salonId");
+    const nombreInput = document.getElementById("nombre");
+    const direccionInput = document.getElementById("direccion");
+    const mapaInput = document.getElementById("mapa");
+    const imagenInput = document.getElementById("imagen");
+    const descripcionInput = document.getElementById("descripcion");
+    const tablaSalonesBody = document.getElementById("tablaSalones").querySelector("tbody");
+    const feedbackContainer = document.getElementById("feedbackContainer");
+
+    function mostrarFeedback(mensaje, tipo = 'success') {
+        feedbackContainer.innerHTML = `<div class="alert alert-${tipo} feedback-message">${mensaje}</div>`;
+        setTimeout(() => {
+            if (feedbackContainer.firstChild) {
+                 feedbackContainer.removeChild(feedbackContainer.firstChild);
+            }
+        }, 4000);
+    }
+    
+    function limpiarFormulario() {
+        formSalon.reset();
+        salonIdInput.value = "";
+        nombreInput.focus();
+    }
+    window.limpiarFormulario = limpiarFormulario;
+
+    
+     
+     
+    function renderizarTablaSalones() {
+        const salones = obtenerSalones();
+        tablaSalonesBody.innerHTML = ""; 
+
+        if (!salones || salones.length === 0) {
+            const fila = tablaSalonesBody.insertRow();
+            const celda = fila.insertCell();
+            celda.colSpan = 5; 
+            celda.textContent = "Actualmente no hay salones registrados.";
+            celda.style.textAlign = "center";
+            return;
+        }
+
+        salones.forEach(salon => {
+            if (!salon || typeof salon.id === 'undefined') {
+                console.warn("Salón inválido o sin ID, se omitirá:", salon);
+                return; 
+            }
+
+            
+            const imagenCellContent = salon.imagen
+                ? `<img src="${salon.imagen}" alt="Imagen de ${salon.nombre || 'Salón'}" class="salon-table-img">`
+                : `<span class="salon-table-no-img">Sin imagen</span>`;
+
+            const fila = tablaSalonesBody.insertRow();
+            fila.innerHTML = `
+                <td style="text-align: center;">${imagenCellContent}</td>
+                <td>${salon.nombre || 'No disponible'}</td>
+                <td>${salon.mapa ? `<a href="${salon.mapa}" target="_blank" title="Ver en mapa">${salon.direccion || 'No disponible'} <i class="fas fa-external-link-alt fa-xs"></i></a>` : (salon.direccion || 'No disponible')}</td>
+                <td>${salon.descripcion || 'No disponible'}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="cargarSalonParaEditar(${salon.id})" title="Editar Salón">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="eliminarSalonLocal(${salon.id})" title="Eliminar Salón">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </td>
+            `;
+        });
+    }
+
+    function cargarSalonParaEditar(id) {
+        const salones = obtenerSalones();
+        const salonAEditar = salones.find(s => s.id === id);
+
+        if (salonAEditar) {
+            salonIdInput.value = salonAEditar.id;
+            nombreInput.value = salonAEditar.nombre;
+            direccionInput.value = salonAEditar.direccion;
+            mapaInput.value = salonAEditar.mapa || "";
+            imagenInput.value = salonAEditar.imagen || "";
+            descripcionInput.value = salonAEditar.descripcion;
+            
+            const formElement = document.getElementById('formSalon');
+            if(formElement) {
+                formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            nombreInput.focus();
+        } else {
+            mostrarFeedback("Error: Salón no encontrado para editar.", "danger");
+        }
+    }
+    window.cargarSalonParaEditar = cargarSalonParaEditar;
+
+    function eliminarSalonLocal(id) {
+        if (confirm("¿Estás realmente seguro de que deseas eliminar este salón? Esta acción no se puede deshacer.")) {
+            let salones = obtenerSalones();
+            const indiceSalon = salones.findIndex(s => s.id === id);
+
+            if (indiceSalon !== -1) {
+                salones.splice(indiceSalon, 1);
+                guardarSalones(salones);
+                renderizarTablaSalones();
+                mostrarFeedback("Salón eliminado con éxito.", "success");
+                if (parseInt(salonIdInput.value) === id) {
+                    limpiarFormulario();
+                }
+            } else {
+                mostrarFeedback("Error: Salón no encontrado para eliminar.", "danger");
+            }
+        }
+    }
+    window.eliminarSalonLocal = eliminarSalonLocal;
+
+    formSalon.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const idActual = salonIdInput.value ? parseInt(salonIdInput.value) : null;
+        const salonData = {
+            nombre: nombreInput.value.trim(),
+            direccion: direccionInput.value.trim(),
+            mapa: mapaInput.value.trim(),
+            imagen: imagenInput.value.trim(),
+            descripcion: descripcionInput.value.trim()
+        };
+
+        if (!salonData.nombre || !salonData.direccion || !salonData.descripcion) {
+            mostrarFeedback("Los campos Nombre, Dirección y Descripción son obligatorios.", "danger");
+            return;
+        }
+        
+        let salones = obtenerSalones();
+        let mensajeExito = "";
+
+        if (idActual) {
+            const indiceSalon = salones.findIndex(s => s.id === idActual);
+            if (indiceSalon !== -1) {
+                salonData.id = idActual;
+                salones.splice(indiceSalon, 1, salonData); 
+                mensajeExito = "Salón actualizado con éxito.";
+            } else {
+                mostrarFeedback("Error: Salón a editar no fue encontrado. Intente recargar.", "danger");
+                return;
+            }
+        } else {
+            salonData.id = Date.now();
+            salones.push(salonData);
+            mensajeExito = "Salón agregado con éxito.";
+        }
+
+        guardarSalones(salones);
+        renderizarTablaSalones();
+        limpiarFormulario();
+        mostrarFeedback(mensajeExito, "success");
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (sessionStorage.getItem("logueado") !== "true") {
+            window.location.href = "login.html";
+        } else {
+            inicializarLocalStorage();
+            renderizarTablaSalones();
+        }
+    });
+ </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+.form-group-inline {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 1rem; 
+}
+
+.form-label {
+    
+    width: 80px; 
+    margin-right: 10px; 
+    text-align: left; 
+}
+
+.form-control {
+    
+    flex-grow: 1;
+}
+
