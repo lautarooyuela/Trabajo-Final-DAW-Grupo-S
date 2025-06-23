@@ -37,24 +37,13 @@
   </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const usuario = document.getElementById("usuario").value;
-      const clave = document.getElementById("clave").value;
-
-      
-      if (usuario === "admin" && clave === "1909") {
-        sessionStorage.setItem("logueado", "true");
-        window.location.href = "admin_salones.html"; 
-        alert ("Usuario identificado con exito")
-      } else {
-        alert ("Usuario y/o contraseña incorrecta. Intente nuevamente")
-       
-      }
-    });
-  </script>
+<script>
+document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    alert("SIMULACION: Inicio de sesiOn exitoso .");
+    sessionStorage.setItem("accessToken", "token_de_prueba_simulado");
+    window.location.href = "admin_salones.html";
+});
+</script>
 </body>
 </html>

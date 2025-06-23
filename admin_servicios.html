@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Servicios - IDW S.A.</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary" style="height: 70px;">
+        <div class="container">
+            <a href="index.html" class="navbar-brand d-flex align-items-center">
+                <span class="fs-4 align-middle">IDW S.A. - Admin</span>
+            </a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNavAdmin">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link fs-5 px-2" href="admin_salones.html"><i class="fas fa-person-booth me-1"></i>Salones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fs-5 px-2 active" href="admin_servicios.html"><i class="fas fa-concierge-bell me-1"></i>Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fs-5 px-2" href="login.html" onclick="sessionStorage.removeItem('accessToken');"><i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mt-4">
+    <h2 class="mb-4 text-center">Administración de Servicios Adicionales</h2>
+    <div id="feedbackContainer" class="mb-3"></div>
+
+    <section class="my-4 card card-admin p-3 p-md-4">
+        <h3 class="mb-3">Administrar Servicio</h3>
+        <form id="formServicio" class="row g-3">
+            <input type="hidden" id="servicioId">
+            <div class="col-md-8">
+                <label for="nombre" class="form-label">Nombre del Servicio</label>
+                <input type="text" class="form-control" id="nombre" required>
+            </div>
+            <div class="col-md-4">
+                <label for="valor" class="form-label">Valor (ARS)</label>
+                <input type="number" class="form-control" id="valor" placeholder="Ej: 15000" required>
+            </div>
+            <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Guardar Servicio</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="limpiarFormulario()"><i class="fas fa-eraser me-1"></i>Limpiar</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="mt-5">
+        <h3 class="mb-3">Lista de Servicios Registrados</h3>
+        <div class="table-responsive">
+            <table id="tablaServicios" class="table table-bordered table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nombre del Servicio</th>
+                        <th>Valor</th>
+                        <th style="width: 200px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script type="module">
+    import { obtenerServicios, guardarServicios } from './servicios.js';
+
+    const formServicio = document.getElementById("formServicio");
+    const servicioIdInput = document.getElementById("servicioId");
+    const nombreInput = document.getElementById("nombre");
+    const valorInput = document.getElementById("valor");
+    const tablaServiciosBody = document.getElementById("tablaServicios").querySelector("tbody");
+    const feedbackContainer = document.getElementById("feedbackContainer");
+
+    const currencyFormatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+
+    function mostrarFeedback(mensaje, tipo = 'success') {
+        feedbackContainer.innerHTML = `<div class="alert alert-${tipo}">${mensaje}</div>`;
+        setTimeout(() => { feedbackContainer.innerHTML = "" }, 4000);
+    }
+
+    function limpiarFormulario() {
+        formServicio.reset();
+        servicioIdInput.value = "";
+        nombreInput.focus();
+    }
+    window.limpiarFormulario = limpiarFormulario;
+
+    function renderizarTabla() {
+        const servicios = obtenerServicios();
+        tablaServiciosBody.innerHTML = "";
+
+        if (!servicios.length) {
+            tablaServiciosBody.innerHTML = '<tr><td colspan="3" class="text-center">No hay servicios registrados.</td></tr>';
+            return;
+        }
+
+        servicios.forEach(servicio => {
+            const fila = tablaServiciosBody.insertRow();
+            fila.innerHTML = `
+                <td>${servicio.nombre}</td>
+                <td>${currencyFormatter.format(servicio.valor)}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="cargarParaEditar(${servicio.id})">Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="eliminarLocal(${servicio.id})">Eliminar</button>
+                </td>
+            `;
+        });
+    }
+
+    function cargarParaEditar(id) {
+        const servicios = obtenerServicios();
+        const servicio = servicios.find(s => s.id === id);
+        if (servicio) {
+            servicioIdInput.value = servicio.id;
+            nombreInput.value = servicio.nombre;
+            valorInput.value = servicio.valor;
+            formServicio.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    window.cargarParaEditar = cargarParaEditar;
+
+    function eliminarLocal(id) {
+        if (confirm("¿Estás seguro de que deseas eliminar este servicio?")) {
+            let servicios = obtenerServicios();
+            servicios = servicios.filter(s => s.id !== id);
+            guardarServicios(servicios);
+            renderizarTabla();
+            mostrarFeedback("Servicio eliminado.", "success");
+        }
+    }
+    window.eliminarLocal = eliminarLocal;
+
+    formServicio.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const idActual = servicioIdInput.value ? parseInt(servicioIdInput.value) : null;
+        const servicioData = {
+            nombre: nombreInput.value.trim(),
+            valor: parseFloat(valorInput.value)
+        };
+
+        if (!servicioData.nombre || !servicioData.valor) {
+            mostrarFeedback("Nombre y Valor son obligatorios.", "danger");
+            return;
+        }
+
+        let servicios = obtenerServicios();
+        if (idActual) {
+            const index = servicios.findIndex(s => s.id === idActual);
+            servicioData.id = idActual;
+            servicios[index] = servicioData;
+        } else {
+            servicioData.id = Date.now();
+            servicios.push(servicioData);
+        }
+
+        guardarServicios(servicios);
+        renderizarTabla();
+        limpiarFormulario();
+        mostrarFeedback(idActual ? "Servicio actualizado." : "Servicio agregado.", "success");
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!sessionStorage.getItem("accessToken")) {
+            window.location.href = "login.html";
+            return;
+        }
+        renderizarTabla();
+    });
+</script>
+</body>
+</html>
