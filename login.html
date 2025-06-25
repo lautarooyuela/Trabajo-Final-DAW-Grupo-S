@@ -37,13 +37,51 @@
   </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
 <script>
 document.getElementById("loginForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    alert("SIMULACION: Inicio de sesiOn exitoso .");
-    sessionStorage.setItem("accessToken", "token_de_prueba_simulado");
-    window.location.href = "admin_salones.html";
+
+    const usuarioInput = document.getElementById("usuario");
+    const claveInput = document.getElementById("clave");
+    const mensajeError = document.getElementById("mensajeError");
+
+ 
+    mensajeError.style.display = 'none';
+
+
+    fetch('https://dummyjson.com/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: usuarioInput.value,
+            password: claveInput.value,
+        })
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        } else {
+         
+            throw new Error('Error en la autenticación');
+        }
+    })
+    .then(data => {
+  
+        sessionStorage.setItem("accessToken", data.token);
+        
+        window.location.href = "admin_salones.html";
+    })
+    .catch(error => {
+       
+        console.error('Falló el inicio de sesión:', error);
+        mensajeError.style.display = 'block';
+    });
 });
 </script>
+
 </body>
 </html>
