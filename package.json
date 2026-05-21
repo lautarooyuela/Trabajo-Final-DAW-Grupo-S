@@ -1,0 +1,11 @@
+{
+  "name": "tpfinal-desa-web",
+  "version": "1.0.0",
+  "description": "Trabajo Final Integrador - Desarrollo de Aplicaciones Web",
+  "scripts": {
+    "kill-ports": "npx kill-port 3000 4200",
+    "start-backend": "cd backend && npm run start:dev",
+    "start-frontend": "cd frontend && ng serve",
+    "install-all": "cd backend && npm install && cd ../frontend && npm install"
+  }
+}
