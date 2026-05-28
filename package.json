@@ -7,5 +7,8 @@
     "backend": "cd backend && npm run start:dev",
     "frontend": "cd frontend && ng serve",
     "install-all": "cd backend && npm install && cd ../frontend && npm install"
+  },
+  "dependencies": {
+    "pg": "^8.21.0"
   }
 }

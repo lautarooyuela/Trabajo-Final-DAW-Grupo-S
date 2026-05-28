@@ -11,8 +11,12 @@ import { TareasModule } from './tareas/tareas.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: 'tpfinal.sqlite',
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      password: '123456',
+      database: 'tpfinal',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),

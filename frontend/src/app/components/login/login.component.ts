@@ -9,29 +9,68 @@ import { AuthService } from '../../services/auth.service';
   imports: [FormsModule],
   template: `
     <div class="login-container">
-      <h2>Iniciar Sesión</h2>
-      <form (ngSubmit)="onSubmit()">
-        <label>
-          Usuario:
-          <input type="text" [(ngModel)]="nombreUsuario" name="usuario" required />
-        </label>
-        <label>
-          Contraseña:
-          <input type="password" [(ngModel)]="clave" name="clave" required />
-        </label>
-        <button type="submit">Ingresar</button>
-      </form>
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
-      }
+      <div class="login-card">
+        <h2>Iniciar Sesión</h2>
+        <form (ngSubmit)="onSubmit()">
+          <input type="text" [(ngModel)]="nombreUsuario" name="usuario" placeholder="Usuario" required />
+          <input type="password" [(ngModel)]="clave" name="clave" placeholder="Contraseña" required />
+          <button type="submit" class="login-btn">Ingresar</button>
+        </form>
+        @if (error()) {
+          <p class="error">{{ error() }}</p>
+        }
+      </div>
     </div>
   `,
   styles: [`
-    .login-container { max-width: 300px; margin: 80px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-    label { display: block; margin-bottom: 12px; }
-    input { width: 100%; padding: 6px; box-sizing: border-box; }
-    button { width: 100%; padding: 8px; }
-    .error { color: red; }
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+
+    .login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    h2 { margin-bottom: 20px; color: #333; }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .login-btn:hover {
+      background-color: #303f9f;
+    }
+
+    .error {
+      color: #d32f2f;
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
   `]
 })
 export class LoginComponent {

@@ -9,6 +9,13 @@ Sistema de gestión de proyectos desarrollado con NestJS (backend), Angular (fro
 - Lautaro Oyuela
 - Tamara Savoiardo
 
+
+## Funcionalidades Implementadas
+- **Gestión de Proyectos:** CRUD completo, estados dinámicos y asignación de clientes.
+- **Gestión de Clientes:** CRUD completo con estados y baja lógica.
+- **Exportación de Datos:** Funcionalidad de exportación a **CSV** integrada en los listados de Proyectos y Clientes.
+- **Seguridad:** Implementación de autenticación y rutas protegidas (Guards).
+
 ## Requisitos previos
 
 - Node.js (v18 o superior)
@@ -16,11 +23,11 @@ Sistema de gestión de proyectos desarrollado con NestJS (backend), Angular (fro
 - NestJS CLI: `npm i -g @nestjs/cli`
 - Angular CLI: `npm i -g @angular/cli`
 
-## Configuración de la base de datos
 
-El backend está configurado por defecto con **SQLite** (`backend/tpfinal.sqlite`) para que funcione inmediatamente sin necesidad de instalar ni configurar PostgreSQL localmente.
 
-> Si querés usar **PostgreSQL**, editá `backend/src/app.module.ts` y reemplazá la configuración de TypeORM por:
+> Si querés usar **PostgreSQL**, editá `backend/src/app.module.ts` y reemplazá l## Configuración de la base de datos
+
+El backend está configurado por defecto con **SQLite** (`backend/tpfinal.sqlite`) para que funcione inmediatamente sin necesidad de instalar ni configurar PostgreSQL localmente.a configuración de TypeORM por:
 >
 > ```ts
 > TypeOrmModule.forRoot({
