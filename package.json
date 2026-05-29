@@ -5,7 +5,7 @@
   "scripts": {
     "kill-ports": "npx kill-port 3000 4200",
     "backend": "cd backend && npm run start:dev",
-    "frontend": "cd frontend && ng serve",
+    "frontend": "cd frontend && npx ng serve",
     "install-all": "cd backend && npm install && cd ../frontend && npm install"
   },
   "dependencies": {
