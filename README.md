@@ -63,7 +63,7 @@ En otra terminal:
 ```bash
 cd frontend
 npm install
-ng serve
+npm start
 ```
 
 El frontend se levantará en `http://localhost:4200`.
