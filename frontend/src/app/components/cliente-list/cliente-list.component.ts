@@ -19,6 +19,8 @@ import { ClienteService } from '../../services/cliente.service';
         <tr>
           <th>ID</th>
           <th>Nombre</th>
+          <th>Email</th>
+          <th>Teléfono</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -28,6 +30,8 @@ import { ClienteService } from '../../services/cliente.service';
           <tr>
             <td>{{ c.id }}</td>
             <td>{{ c.nombre }}</td>
+            <td>{{ c.email }}</td>
+            <td>{{ c.telefono }}</td>
             <td>
               <span [class]="c.estado === 'Activo' ? 'badge-activo' : 'badge-baja'">
                 {{ c.estado }}
@@ -83,8 +87,8 @@ export class ClienteListComponent implements OnInit {
     const datos = this.clientes();
     if (datos.length === 0) return;
 
-    const cabeceras = ['ID', 'Nombre', 'Estado'];
-    const filas = datos.map(c => [c.id, c.nombre, c.estado].join(','));
+    const cabeceras = ['ID', 'Nombre', 'Email', 'Teléfono', 'Estado'];
+    const filas = datos.map(c => [c.id, c.nombre, c.email, c.telefono, c.estado].join(','));
     const csvContent = [cabeceras.join(','), ...filas].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cliente } from './clientes.entity';
 import { CrearClienteDto, EditarClienteDto } from './dtos/clientes.dto';
+import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
 
 @Injectable()
 export class ClientesService {
@@ -11,8 +12,30 @@ export class ClientesService {
     private clienteRepo: Repository<Cliente>,
   ) {}
 
+  private normalizarTelefono(telefono: string): string {
+    if (!telefono) return telefono;
+    
+    try {
+      // Detectar automáticamente el país del teléfono E.164
+      const parsed = parsePhoneNumber(telefono);
+      if (parsed && parsed.isValid()) {
+        // Retornar en formato E.164: +34912345678
+        return parsed.format('E.164');
+      }
+    } catch (e) {
+      // Si no se puede parsear, retornar tal cual (la validación en DTO fallará)
+    }
+    
+    return telefono;
+  }
+
   async crear(dto: CrearClienteDto) {
-    const nuevo = this.clienteRepo.create(dto);
+    // Normalizar teléfono a E.164
+    const clienteNormalizado = {
+      ...dto,
+      telefono: this.normalizarTelefono(dto.telefono),
+    };
+    const nuevo = this.clienteRepo.create(clienteNormalizado);
     return this.clienteRepo.save(nuevo);
   }
 
@@ -41,7 +64,12 @@ export class ClientesService {
   async editar(id: number, dto: EditarClienteDto) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      await this.clienteRepo.update({ id }, dto);
+      // Normalizar teléfono si viene en el DTO
+      const dtoNormalizado = { ...dto };
+      if (dto.telefono) {
+        dtoNormalizado.telefono = this.normalizarTelefono(dto.telefono);
+      }
+      await this.clienteRepo.update({ id }, dtoNormalizado);
       return this.buscarPorId(id);
     }
   }

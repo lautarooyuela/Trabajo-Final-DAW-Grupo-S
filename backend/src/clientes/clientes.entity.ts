@@ -9,6 +9,12 @@ export class Cliente {
   @Column({ nullable: false })
   nombre: string;
 
+  @Column({ nullable: false, default: '' })
+  email: string;
+
+  @Column({ nullable: false, default: '' })
+  telefono: string;
+
   @Column({ nullable: false, default: 'Activo' })
   estado: string;
 
