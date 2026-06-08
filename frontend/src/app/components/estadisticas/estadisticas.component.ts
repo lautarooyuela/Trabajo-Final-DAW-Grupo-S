@@ -10,171 +10,241 @@ import { forkJoin } from 'rxjs';
   standalone: true,
   template: `
     <div class="page">
-      <h2>Estadisticas</h2>
+      <h2 class="titulo-seccion">Estadísticas</h2>
 
       @if (cargando()) {
-        <p class="cargando">Cargando...</p>
+        <div class="cargando-container">
+          <p class="cargando">Cargando datos del sistema...</p>
+        </div>
       } @else {
         <div class="grid-cards">
-          <div class="card card-azul">
-            <span class="card-numero">{{ totalProyectos() }}</span>
+          <div class="card">
+            <span class="card-numero azul">{{ totalProyectos() }}</span>
             <span class="card-label">Proyectos totales</span>
           </div>
-          <div class="card card-verde">
-            <span class="card-numero">{{ proyectosActivos() }}</span>
+          <div class="card">
+            <span class="card-numero verde">{{ proyectosActivos() }}</span>
             <span class="card-label">Proyectos activos</span>
           </div>
-          <div class="card card-gris">
-            <span class="card-numero">{{ proyectosFinalizados() }}</span>
+          <div class="card">
+            <span class="card-numero gris">{{ proyectosFinalizados() }}</span>
             <span class="card-label">Proyectos finalizados</span>
           </div>
-          <div class="card card-rojo">
-            <span class="card-numero">{{ proyectosBaja() }}</span>
+          <div class="card">
+            <span class="card-numero rojo">{{ proyectosBaja() }}</span>
             <span class="card-label">Proyectos de baja</span>
           </div>
-          <div class="card card-naranja">
-            <span class="card-numero">{{ tareasPendientes() }}</span>
+          <div class="card">
+            <span class="card-numero naranja">{{ tareasPendientes() }}</span>
             <span class="card-label">Tareas pendientes</span>
           </div>
-          <div class="card card-verde">
-            <span class="card-numero">{{ tareasFinalizadas() }}</span>
+          <div class="card">
+            <span class="card-numero verde-claro">{{ tareasFinalizadas() }}</span>
             <span class="card-label">Tareas finalizadas</span>
           </div>
         </div>
 
         <div class="grid-tablas">
           <div class="seccion">
-            <h3>Proyectos por cliente</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Cantidad</th>
-                  <th>Barra</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (fila of proyectosPorCliente(); track fila.nombre) {
+            <h3 class="subtitulo">Proyectos por cliente</h3>
+            <div class="tabla-container">
+              <table>
+                <thead>
                   <tr>
-                    <td>{{ fila.nombre }}</td>
-                    <td class="td-numero">{{ fila.cantidad }}</td>
-                    <td class="td-barra">
-                      <div class="barra-fondo">
-                        <div
-                          class="barra-relleno"
-                          [style.width.%]="(fila.cantidad / maxProyectosPorCliente()) * 100"
-                        ></div>
-                      </div>
-                    </td>
+                    <th>CLIENTE</th>
+                    <th class="td-numero">CANTIDAD</th>
+                    <th>BARRA</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (fila of proyectosPorCliente(); track fila.nombre) {
+                    <tr>
+                      <td class="td-nombre">{{ fila.nombre }}</td>
+                      <td class="td-numero">{{ fila.cantidad }}</td>
+                      <td class="td-barra">
+                        <div class="barra-fondo">
+                          <div
+                            class="barra-relleno"
+                            [style.width.%]="(fila.cantidad / maxProyectosPorCliente()) * 100"
+                          ></div>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div class="seccion">
-            <h3>Tareas por proyecto (top 5)</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Proyecto</th>
-                  <th>Pendientes</th>
-                  <th>Finalizadas</th>
-                  <th>Baja</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (fila of topProyectosPorTareas(); track fila.nombre) {
+            <h3 class="subtitulo">Tareas por proyecto (top 5)</h3>
+            <div class="tabla-container">
+              <table>
+                <thead>
                   <tr>
-                    <td>{{ fila.nombre }}</td>
-                    <td class="td-numero">{{ fila.pendientes }}</td>
-                    <td class="td-numero">{{ fila.finalizadas }}</td>
-                    <td class="td-numero">{{ fila.baja }}</td>
-                    <td class="td-numero td-bold">{{ fila.total }}</td>
+                    <th>PROYECTO</th>
+                    <th class="td-numero">PENDIENTES</th>
+                    <th class="td-numero">FINALIZADAS</th>
+                    <th class="td-numero">BAJA</th>
+                    <th class="td-numero">TOTAL</th>
                   </tr>
-                }
-                @if (topProyectosPorTareas().length === 0) {
-                  <tr>
-                    <td colspan="5" class="sin-datos">No hay tareas cargadas.</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (fila of topProyectosPorTareas(); track fila.nombre) {
+                    <tr>
+                      <td class="td-nombre">{{ fila.nombre }}</td>
+                      <td class="td-numero">{{ fila.pendientes }}</td>
+                      <td class="td-numero">{{ fila.finalizadas }}</td>
+                      <td class="td-numero">{{ fila.baja }}</td>
+                      <td class="td-numero td-bold">{{ fila.total }}</td>
+                    </tr>
+                  }
+                  @if (topProyectosPorTareas().length === 0) {
+                    <tr>
+                      <td colspan="5" class="sin-datos">No hay tareas cargadas.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       }
     </div>
   `,
   styles: [`
-    .page { padding: 24px; }
-    h2 { margin: 0 0 24px; color: #222; }
-    h3 { margin: 0 0 14px; color: #333; font-size: 1em; }
+    .page { padding: 32px; max-width: 1200px; margin: 0 auto; }
+    
+    .titulo-seccion { 
+      margin: 0 0 32px; 
+      color: var(--text-secondary); 
+      font-size: 1.4em; 
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-    .cargando { color: #888; }
+    .subtitulo { 
+      margin: 0 0 20px; 
+      color: var(--text-primary); 
+      font-size: 0.9em; 
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    .cargando-container {
+      display: flex;
+      justify-content: center;
+      padding: 100px 0;
+    }
+    .cargando { color: var(--text-secondary); font-weight: 500; }
 
     .grid-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 16px;
-      margin-bottom: 32px;
+      margin-bottom: 40px;
     }
 
     .card {
-      border-radius: 8px;
-      padding: 20px 16px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 24px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      border: 1px solid #e0e0e0;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s;
     }
+    .card:hover { transform: translateY(-2px); }
 
-    .card-numero { font-size: 2.2em; font-weight: bold; line-height: 1; }
-    .card-label { font-size: 0.82em; text-align: center; color: #555; }
+    .card-numero { font-size: 2.5em; font-weight: 800; line-height: 1; }
+    .card-label { font-size: 0.75em; text-align: center; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
 
-    .card-azul { background: #e3f2fd; }
-    .card-azul .card-numero { color: #1565c0; }
-    .card-verde { background: #e8f5e9; }
-    .card-verde .card-numero { color: #2e7d32; }
-    .card-gris { background: #f5f5f5; }
-    .card-gris .card-numero { color: #444; }
-    .card-rojo { background: #ffebee; }
-    .card-rojo .card-numero { color: #c62828; }
-    .card-naranja { background: #fff3e0; }
-    .card-naranja .card-numero { color: #e65100; }
+    .azul { color: #60a5fa; }
+    .verde { color: #34d399; }
+    .verde-claro { color: #a7f3d0; }
+    .gris { color: #94a3b8; }
+    .rojo { color: #f87171; }
+    .naranja { color: #fb923c; }
 
     .grid-tablas {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
+      align-items: start;
     }
 
     .seccion {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     }
 
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #e0e0e0; padding: 10px 12px; text-align: left; font-size: 0.92em; }
-    th { background: #f8f9fa; font-weight: 600; }
-    tbody tr:hover { background: #f9f9f9; }
+    .tabla-container { overflow-x: auto; }
 
-    .td-numero { text-align: center; width: 60px; }
-    .td-bold { font-weight: bold; }
-    .td-barra { width: 120px; }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 0; 
+      border: none; 
+      background: transparent;
+      box-shadow: none;
+    }
+    
+    th { 
+      background-color: #1e293b !important; 
+      color: var(--text-secondary) !important; 
+      font-weight: 700 !important;
+      font-size: 0.7em !important;
+      padding: 12px 16px !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-    .barra-fondo { background: #e0e0e0; border-radius: 4px; height: 10px; width: 100%; }
-    .barra-relleno { background: #1976d2; border-radius: 4px; height: 10px; }
+    td { 
+      padding: 14px 16px !important; 
+      border-bottom: 1px solid var(--border-color) !important;
+      color: var(--text-primary);
+      font-size: 0.85em;
+    }
 
-    .sin-datos { text-align: center; color: #888; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background-color: rgba(255, 255, 255, 0.03) !important; }
 
-    @media (max-width: 700px) {
+    .td-nombre { font-weight: 500; color: var(--text-primary); }
+    .td-numero { text-align: center; color: var(--text-secondary); }
+    .td-bold { font-weight: 700; color: var(--text-primary); }
+    .td-barra { width: 140px; }
+
+    .barra-fondo { 
+      background: rgba(255, 255, 255, 0.05); 
+      border-radius: 99px; 
+      height: 8px; 
+      width: 100%; 
+      overflow: hidden;
+    }
+    .barra-relleno { 
+      background: linear-gradient(90deg, #3b82f6, #60a5fa); 
+      border-radius: 99px; 
+      height: 100%; 
+      transition: width 0.5s ease-out;
+    }
+
+    .sin-datos { text-align: center; color: var(--text-secondary); padding: 20px !important; font-style: italic; }
+
+    @media (max-width: 900px) {
       .grid-tablas { grid-template-columns: 1fr; }
+      .page { padding: 16px; }
     }
   `]
+
 })
 
 //creo la clase de estadisticas (funcionalidad nueva)
