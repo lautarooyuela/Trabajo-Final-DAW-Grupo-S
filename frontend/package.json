@@ -4,7 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:local": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
+    "deploy": "npm run build && npm run nginx:limpiar && npm run nginx:llenar",
+    "nginx:limpiar": "del /F /Q C:\\nginx-1.28.3\\html\\*",
+    "nginx:llenar": "xcopy /E /I dist\\frontend\\browser\\* C:\\nginx-1.28.3\\html\\",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -19,6 +23,7 @@
     "@angular/material": "^21.2.13",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "jwt-decode": "^4.0.0",
     "libphonenumber-js": "^1.13.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

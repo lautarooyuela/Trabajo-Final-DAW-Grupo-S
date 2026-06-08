@@ -4,7 +4,7 @@ import { Proyecto } from '../models/proyecto.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProyectoService {
-  private apiUrl = 'http://localhost:3000/proyectos';
+  private apiUrl = '/api/proyectos';
 
   constructor(private http: HttpClient) {}
 

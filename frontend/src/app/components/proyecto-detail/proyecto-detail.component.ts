@@ -6,26 +6,36 @@ import { Tarea } from '../../models/tarea.model';
 import { ProyectoService } from '../../services/proyecto.service';
 import { TareaService } from '../../services/tarea.service';
 import { AuthService } from '../../services/auth.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-proyecto-detail',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, MatIconModule],
   template: `
     <div class="page">
-      <div class="header-card">
-        <div>
-          <h2>{{ proyecto()?.nombre }}</h2>
-          <p class="meta">Estado: {{ proyecto()?.estado }} · Cliente: {{ proyecto()?.cliente?.nombre || 'Interno' }}</p>
+      <div class="header-card card">
+        <div class="header-info">
+          <div class="title-row">
+            <mat-icon class="header-icon">folder</mat-icon>
+            <h2>{{ proyecto()?.nombre }}</h2>
+          </div>
+          <p class="meta">
+            <span class="meta-item"><mat-icon>info</mat-icon> {{ proyecto()?.estado }}</span>
+            <span class="meta-divider">·</span>
+            <span class="meta-item"><mat-icon>business</mat-icon> {{ proyecto()?.cliente?.nombre || 'Interno' }}</span>
+          </p>
         </div>
 
-        <button class="btn-secondary" routerLink="/proyectos">Volver</button>
+        <button class="btn-secondary" routerLink="/proyectos">
+          <mat-icon>arrow_back</mat-icon> Volver
+        </button>
       </div>
 
-      <div class="card-section">
+      <div class="card-section card">
         <div class="section-title">
-          <h3>Tareas</h3>
-          <span>{{ tareas().length }} total</span>
+          <h3>Tareas del Proyecto</h3>
+          <span class="count-badge">{{ tareas().length }} tareas</span>
         </div>
 
         @if (authService.puedeCrear()) {
@@ -34,252 +44,268 @@ import { AuthService } from '../../services/auth.service';
               type="text"
               [(ngModel)]="nuevaTarea.descripcion"
               name="descripcion"
-              placeholder="Nueva tarea"
+              placeholder="Escribe una nueva tarea..."
             />
-            <button type="submit" class="btn-primary" [disabled]="!nuevaTarea.descripcion?.trim()">Agregar</button>
+            <button type="submit" class="btn-primary" [disabled]="!nuevaTarea.descripcion?.trim()">
+              <mat-icon>add</mat-icon> Agregar
+            </button>
           </form>
         } @else {
-          <p class="note">Solo los usuarios con rol EDITOR o ADMIN pueden crear tareas.</p>
+          <div class="note-alert">
+            <mat-icon>lock</mat-icon> Solo EDITOR o ADMIN pueden gestionar tareas.
+          </div>
         }
 
-        <table class="tasks-table">
-          <thead>
-            <tr>
-              <th (click)="ordenar('descripcion')" style="cursor: pointer; user-select: none;">
-                Descripción {{ sortField() === 'descripcion' ? (sortAsc() ? '▲' : '▼') : '' }}
-              </th>
-              <th (click)="ordenar('estado')" style="cursor: pointer; user-select: none;">
-                Estado {{ sortField() === 'estado' ? (sortAsc() ? '▲' : '▼') : '' }}
-              </th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (t of tareasOrdenadas(); track t.id) {
+        <div class="table-wrapper">
+          <table class="tasks-table">
+            <thead>
               <tr>
-                <td>
-                  @if (editandoTareaId === t.id) {
-                    <input
-                      type="text"
-                      class="inline-input"
-                      [(ngModel)]="tareaEdit.descripcion"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
-                  } @else {
-                    {{ t.descripcion }}
-                  }
-                </td>
+                <th (click)="ordenar('descripcion')" class="sortable">
+                  Descripción {{ sortField() === 'descripcion' ? (sortAsc() ? '▲' : '▼') : '' }}
+                </th>
+                <th (click)="ordenar('estado')" class="sortable">
+                  Estado {{ sortField() === 'estado' ? (sortAsc() ? '▲' : '▼') : '' }}
+                </th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of tareasOrdenadas(); track t.id) {
+                <tr>
                   <td>
-                    @if (authService.puedeEditar()) {
-                      <select class="status-select" [value]="t.estado" (change)="cambiarEstadoTarea(t.id, $event)">
-                        <option value="PENDIENTE">Pendiente</option>
-                        <option value="FINALIZADA">Finalizada</option>
-                        <option value="BAJA">Baja</option>
-                      </select>
+                    @if (editandoTareaId === t.id) {
+                      <input
+                        type="text"
+                        class="inline-input"
+                        [(ngModel)]="tareaEdit.descripcion"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
                     } @else {
-                      <span class="estado-texto">{{ t.estado }}</span>
+                      <span class="task-desc">{{ t.descripcion }}</span>
                     }
                   </td>
-                <td>
-                    @if (authService.puedeEditar() && editandoTareaId === t.id) {
-                      <button type="button" class="btn-small btn-guardar" (click)="guardarEdicion(t.id)">Guardar</button>
-                      <button type="button" class="btn-small btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>
-                    } @else if (authService.puedeEditar()) {
-                      <button type="button" class="btn-small btn-editar" (click)="iniciarEdicion(t)">Editar</button>
-                      @if (authService.puedeEliminar()) {
-                        <button class="btn-small btn-eliminar" type="button" (click)="eliminarTarea(t.id)">Eliminar</button>
+                    <td>
+                      @if (authService.puedeEditar()) {
+                        <select class="status-select" [value]="t.estado" (change)="cambiarEstadoTarea(t.id, $event)">
+                          <option value="PENDIENTE">Pendiente</option>
+                          <option value="FINALIZADA">Finalizada</option>
+                          <option value="BAJA">Baja</option>
+                        </select>
+                      } @else {
+                        <span class="estado-text">{{ t.estado }}</span>
                       }
-                    } @else {
-                      <span class="empty-actions">Sin acciones</span>
-                    }
-                </td>
-              </tr>
-            }
-            @if (tareasOrdenadas().length === 0) {
-              <tr>
-                <td colspan="3" class="empty-state">No hay tareas creadas para este proyecto.</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+                    </td>
+                  <td class="actions-cell">
+                      @if (authService.puedeEditar() && editandoTareaId === t.id) {
+                        <button type="button" class="btn-small btn-guardar" (click)="guardarEdicion(t.id)">
+                          <mat-icon>check</mat-icon>
+                        </button>
+                        <button type="button" class="btn-small btn-cancelar" (click)="cancelarEdicion()">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      } @else if (authService.puedeEditar()) {
+                        <button type="button" class="btn-small btn-editar" (click)="iniciarEdicion(t)">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                        @if (authService.puedeEliminar()) {
+                          <button class="btn-small btn-eliminar" type="button" (click)="eliminarTarea(t.id)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        }
+                      } @else {
+                        <span class="empty-actions">-</span>
+                      }
+                  </td>
+                </tr>
+              }
+              @if (tareasOrdenadas().length === 0) {
+                <tr>
+                  <td colspan="3" class="empty-state">
+                    <mat-icon>task_alt</mat-icon>
+                    <p>No hay tareas pendientes en este proyecto.</p>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `,
   styles: [`
     .page {
-      padding: 24px;
+      padding: 32px;
       display: grid;
-      gap: 20px;
+      gap: 32px;
       justify-items: center;
     }
 
-    .header-card,
-    .card-section {
-      width: 50%;
-      align-self: center;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 20px;
+    .card {
+      width: 100%;
+      max-width: 1000px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
     }
 
     .header-card {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
     }
 
-    h2,
-    h3 {
-      margin: 0;
-      color: #222;
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
     }
+
+    .header-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: var(--primary-color);
+    }
+
+    h2 { margin: 0; font-size: 2.2em; color: var(--text-primary); }
+    h3 { margin: 0; color: var(--text-primary); font-size: 1.4em; }
 
     .meta {
-      margin: 6px 0 0;
-      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-secondary);
+      font-size: 0.95em;
+      margin: 0;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-item mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
 
     .section-title {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .count-badge {
+      background: #0f172a;
+      color: var(--text-secondary);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85em;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
     }
 
     .task-form {
       display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 32px;
     }
 
-    .task-form input,
-    .inline-input,
-    .status-select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box;
-      font: inherit;
-      background: #fff;
-    }
-
-    .task-form input {
-      flex: 1;
-    }
-
-    .tasks-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-    }
-
-    .tasks-table th,
-    .tasks-table td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-    }
-
-    .tasks-table th {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-
-    .tasks-table tbody tr:hover {
-      background-color: #f9f9f9;
-      transition: 0.2s;
-    }
-
-    .btn-primary,
-    .btn-secondary,
-    .btn-small {
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 8px 14px;
-      cursor: pointer;
-      background: #f5f5f5;
-      color: #444;
-    }
+    .task-form input { flex: 1; }
 
     .btn-primary {
-      background: #2e7d32;
-      color: #fff;
-      border-color: #2e7d32;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px !important;
+      background-color: var(--primary-color) !important;
+      border: none !important;
+      border-radius: 12px !important;
+      color: white !important;
+      font-weight: 700 !important;
     }
 
     .btn-secondary {
-      min-width: 110px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .btn-editar {
-      background-color: #f5f5f5;
-      color: #555;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 4px 10px;
-      margin-right: 6px;
-      cursor: pointer;
+    .table-wrapper {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
     }
 
-    .btn-editar:hover {
-      background-color: #e0e0e0;
+    .tasks-table {
+      margin-top: 0;
+      border: none;
+      background: var(--bg-card);
     }
 
-    .btn-eliminar {
-      color: #d32f2f;
-      font-weight: 600;
-      background: none;
-      border: 1px solid #d32f2f;
-      border-radius: 4px;
-      padding: 4px 10px;
-      cursor: pointer;
+    .task-desc {
+      font-weight: 500;
+      color: var(--text-primary);
     }
 
-        .danger-btn { color: #d32f2f; font-weight: 600; background: none; border: 1px solid #d32f2f; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
-
-
-    .btn-eliminar:hover {
-      background-color: #ffebee;
+    .actions-cell {
+      display: flex;
+      gap: 8px;
     }
 
-
-    .btn-guardar {
-      background: #2e7d32;
-      color: #fff;
-      border-color: #2e7d32;
-      margin-right: 6px;
+    .btn-small {
+      width: 36px;
+      height: 36px;
+      padding: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px !important;
     }
 
-    .btn-cancelar {
-      background: #f5f5f5;
-      color: #555;
+    .btn-guardar { background-color: var(--success-color) !important; color: white !important; border: none !important; }
+    .btn-cancelar { background-color: var(--bg-main) !important; color: var(--text-secondary) !important; }
+    .btn-eliminar:hover { background-color: rgba(239, 68, 68, 0.1) !important; color: var(--danger-color) !important; }
+
+    .status-select {
+      background-color: #0f172a !important;
+      border: 1px solid var(--border-color) !important;
+      padding: 6px 12px !important;
+      font-size: 0.85em !important;
+      font-weight: 600 !important;
+      color: var(--text-primary) !important;
     }
 
+    .note-alert {
+      background: rgba(59, 130, 246, 0.05);
+      color: var(--text-secondary);
+      padding: 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(59, 130, 246, 0.1);
+    }
 
     .empty-state {
       text-align: center;
-      color: #888;
-      font-style: italic;
-      padding: 24px !important;
+      padding: 60px !important;
+      color: var(--text-secondary);
     }
 
-    .note {
-      margin: 0 0 16px;
-      color: #666;
-    }
-
-    .estado-texto {
-      color: #555;
-      font-weight: 500;
-    }
-
-    .empty-actions {
-      color: #888;
-      font-size: 0.9em;
+    .empty-state mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
     }
   `]
 })

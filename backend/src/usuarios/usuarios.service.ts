@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario, EstadoUsuario, RolUsuario } from './usuarios.entity';
 import { CrearUsuarioDto, EditarUsuarioDto } from './dtos/usuarios.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
@@ -31,8 +32,12 @@ export class UsuariosService {
       );
     }
 
+    const salt = await bcrypt.genSalt();
+    const claveHasheada = await bcrypt.hash(dto.clave, salt);
+
     const nuevo = this.usuarioRepo.create({
       ...dto,
+      clave: claveHasheada,
       rol: dto.rol ?? RolUsuario.LECTOR,
       estado: EstadoUsuario.ACTIVO,
     });
@@ -60,9 +65,25 @@ export class UsuariosService {
     return this.usuarioRepo.findOne({ where: { nombreUsuario } });
   }
 
+  async buscarUsuarioActivoPorNombre(nombreUsuario: string) {
+    return this.usuarioRepo.findOne({
+      where: { nombreUsuario, estado: EstadoUsuario.ACTIVO },
+    });
+  }
+
   async editar(id: number, dto: EditarUsuarioDto) {
-    const existe = await this.buscarPorId(id);
-    if (!existe) return;
+    const existe = await this.usuarioRepo.findOne({ where: { id } });
+    if (!existe) {
+      throw new HttpException(
+        `Usuario con id ${id} no existe`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (dto.clave) {
+      const salt = await bcrypt.genSalt();
+      dto.clave = await bcrypt.hash(dto.clave, salt);
+    }
 
     await this.usuarioRepo.update({ id }, dto as any);
     return this.buscarPorId(id);
@@ -70,7 +91,7 @@ export class UsuariosService {
 
   async login(nombreUsuario: string, clave: string) {
     const usuario = await this.usuarioRepo.findOne({
-      where: { nombreUsuario, clave },
+      where: { nombreUsuario },
     });
 
     if (!usuario) {
@@ -80,13 +101,16 @@ export class UsuariosService {
       );
     }
 
-    if (usuario.estado !== EstadoUsuario.ACTIVO) {
-      throw new HttpException('Usuario dado de baja', HttpStatus.FORBIDDEN);
+    const esValida = await bcrypt.compare(clave, usuario.clave);
+    if (!esValida) {
+      throw new HttpException(
+        'Credenciales inválidas',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    if (!usuario.rol) {
-      usuario.rol =
-        nombreUsuario === 'admin' ? RolUsuario.ADMIN : RolUsuario.LECTOR;
+    if (usuario.estado !== EstadoUsuario.ACTIVO) {
+      throw new HttpException('Usuario dado de baja', HttpStatus.FORBIDDEN);
     }
 
     return this.sinClave(usuario);

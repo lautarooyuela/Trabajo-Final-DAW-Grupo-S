@@ -3,83 +3,201 @@ import { Router, RouterLink } from '@angular/router';
 import { Cliente } from '../../models/cliente.model';
 import { ClienteService } from '../../services/cliente.service';
 import { AuthService } from '../../services/auth.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-cliente-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MatIconModule],
   template: `
-    <h2>Clientes</h2>
-    <div class="actions-bar">
-      @if (authService.puedeGestionarClientes()) {
-        <button class="success-btn" [routerLink]="['/clientes/nuevo']">Nuevo Cliente</button>
-      }
-      <button class="export-btn" (click)="exportarCSV()">Exportar CSV</button>
+    <div class="header-card card">
+      <div class="header-info">
+        <div class="title-row">
+          <mat-icon class="header-icon">groups</mat-icon>
+          <h2>Clientes</h2>
+        </div>
+        <p class="meta">Administra la base de datos de clientes y su información de contacto.</p>
+      </div>
+      <div class="actions-bar">
+        @if (authService.puedeGestionarClientes()) {
+          <button class="success-btn" [routerLink]="['/clientes/nuevo']">
+            <mat-icon>person_add</mat-icon> Nuevo Cliente
+          </button>
+        }
+        <button class="export-btn" (click)="exportarCSV()">
+          <mat-icon>download</mat-icon> Exportar CSV
+        </button>
+      </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th (click)="ordenar('id')" style="cursor: pointer; user-select: none;">
-            ID {{ sortField() === 'id' ? (sortAsc() ? '▲' : '▼') : '' }}
-          </th>
-          <th (click)="ordenar('nombre')" style="cursor: pointer; user-select: none;">
-            Nombre {{ sortField() === 'nombre' ? (sortAsc() ? '▲' : '▼') : '' }}
-          </th>
-          <th (click)="ordenar('email')" style="cursor: pointer; user-select: none;">
-            Email {{ sortField() === 'email' ? (sortAsc() ? '▲' : '▼') : '' }}
-          </th>
-          <th (click)="ordenar('telefono')" style="cursor: pointer; user-select: none;">
-            Teléfono {{ sortField() === 'telefono' ? (sortAsc() ? '▲' : '▼') : '' }}
-          </th>
-          <th (click)="ordenar('estado')" style="cursor: pointer; user-select: none;">
-            Estado {{ sortField() === 'estado' ? (sortAsc() ? '▲' : '▼') : '' }}
-          </th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (c of clientesOrdenados(); track c.id) {
+    <div class="table-container card">
+      <table>
+        <thead>
           <tr>
-            <td>{{ c.id }}</td>
-            <td>{{ c.nombre }}</td>
-            <td>{{ c.email }}</td>
-            <td>{{ c.telefono }}</td>
-            <td>
-              <span [class]="c.estado === 'ACTIVO' ? 'badge-activo' : 'badge-baja'">
-                {{ c.estado }}
-              </span>
-            </td>
-            <td>
-              @if (authService.puedeGestionarClientes()) {
-                <button class="btn-editar" [routerLink]="['/clientes', c.id, 'editar']">Editar</button>
-                @if (c.estado !== 'BAJA') {
-                  <button class="danger-btn" (click)="baja(c.id)">Dar de baja</button>
-                }
-              }
-            </td>
+            <th (click)="ordenar('id')" class="sortable">
+              ID {{ sortField() === 'id' ? (sortAsc() ? '▲' : '▼') : '' }}
+            </th>
+            <th (click)="ordenar('nombre')" class="sortable">
+              Nombre {{ sortField() === 'nombre' ? (sortAsc() ? '▲' : '▼') : '' }}
+            </th>
+            <th (click)="ordenar('email')" class="sortable">
+              Email {{ sortField() === 'email' ? (sortAsc() ? '▲' : '▼') : '' }}
+            </th>
+            <th (click)="ordenar('telefono')" class="sortable">
+              Teléfono {{ sortField() === 'telefono' ? (sortAsc() ? '▲' : '▼') : '' }}
+            </th>
+            <th (click)="ordenar('estado')" class="sortable">
+              Estado {{ sortField() === 'estado' ? (sortAsc() ? '▲' : '▼') : '' }}
+            </th>
+            <th>Acciones</th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (c of clientesOrdenados(); track c.id) {
+            <tr>
+              <td><span class="id-text">#{{ c.id }}</span></td>
+              <td><span class="name-text">{{ c.nombre }}</span></td>
+              <td>{{ c.email }}</td>
+              <td>{{ c.telefono }}</td>
+              <td>
+                <span [class]="c.estado === 'ACTIVO' ? 'badge-activo' : 'badge-baja'">
+                  {{ c.estado }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                @if (authService.puedeGestionarClientes()) {
+                  <button class="btn-editar" [routerLink]="['/clientes', c.id, 'editar']" title="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  @if (c.estado !== 'BAJA') {
+                    <button class="btn-eliminar" (click)="baja(c.id)" title="Dar de baja">
+                      <mat-icon>person_off</mat-icon>
+                    </button>
+                  }
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   `,
   styles: [`
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
-    th { background-color: #f8f9fa; }
-    
-    .actions-bar { margin-bottom: 20px; display: flex; gap: 10px; }
-    
-    .success-btn { background-color: #2e7d32; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 500; cursor: pointer; }
-    .export-btn { background-color: #1976d2; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 500; cursor: pointer; }
-    
-    .btn-editar { background-color: #f5f5f5; color: #555; border: 1px solid #ddd; border-radius: 4px; padding: 4px 10px; margin-right: 6px; cursor: pointer; }
-    .danger-btn { color: #d32f2f; font-weight: 600; background: none; border: 1px solid #d32f2f; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
-    
-    .badge-activo { background-color: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
-    .badge-baja { background-color: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
-    
-    tbody tr:hover { background-color: #f9f9f9; }
+    .header-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .header-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: var(--primary-color);
+    }
+
+    h2 { margin: 0; font-size: 2em; color: var(--text-primary); }
+
+    .meta {
+      color: var(--text-secondary);
+      font-size: 0.95em;
+      margin: 0;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .success-btn, .export-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+      margin-bottom: 24px;
+    }
+
+    .table-container {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    table {
+      margin-top: 0;
+      border: none;
+      box-shadow: none;
+      background: var(--bg-card);
+    }
+
+    .sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .sortable:hover {
+      color: var(--text-primary) !important;
+    }
+
+    .id-text {
+      color: var(--text-secondary);
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    .name-text {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-editar, .btn-eliminar {
+      width: 36px;
+      height: 36px;
+      padding: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px !important;
+    }
+
+    .btn-eliminar {
+      color: var(--text-secondary) !important;
+      background: transparent !important;
+      border: 1px solid var(--border-color) !important;
+    }
+
+    .btn-eliminar:hover {
+      color: var(--danger-color) !important;
+      background: rgba(239, 68, 68, 0.1) !important;
+      border-color: rgba(239, 68, 68, 0.2) !important;
+    }
+
+    mat-icon {
+      margin: 0 !important;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
   `]
 })
 export class ClienteListComponent implements OnInit {

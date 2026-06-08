@@ -4,7 +4,7 @@ import { Tarea } from '../models/tarea.model';
 
 @Injectable({ providedIn: 'root' })
 export class TareaService {
-  private apiUrl = 'http://localhost:3000/tareas';
+  private apiUrl = '/api/tareas';
 
   constructor(private http: HttpClient) {}
 

@@ -1,105 +1,66 @@
 .sidenav-container {
   height: 100vh;
-}
-.sidenav {
-  width: 250px;
-}
-
-.sidenav-container {
-  height: 100vh;
+  background-color: var(--bg-main);
 }
 
 .sidenav {
-  width: 250px;
-  background: #f5f5f5;
+  width: 280px;
+  background-color: var(--bg-main) !important;
+  border-right: 1px solid var(--border-color);
 }
 
 .content-padding {
-  padding: 20px;
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-
-.logout-btn {
-
-  margin-top: 20px;
-
-  color: #d32f2f; 
-
-  font-weight: bold;
-
+mat-toolbar {
+  background-color: var(--bg-main) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-color);
+  height: 72px !important;
 }
 
-.sidenav-container {
-  height: 100vh;
+mat-nav-list a {
+  margin: 6px 12px;
+  border-radius: 12px;
+  color: var(--text-secondary) !important;
+  transition: all 0.2s;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
-.sidenav {
-  width: 250px;
-  background: #fcfcfc; /* Un gris muy claro para diferenciar del fondo */
-  border-right: 1px solid #e0e0e0; /* Una línea suave para separar el menú */
+mat-nav-list a:hover {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
 }
 
-/* Color para los iconos */
+mat-nav-list a.active {
+  background-color: var(--bg-card) !important;
+  color: var(--primary-color) !important;
+  font-weight: 700;
+}
+
 mat-icon {
-  color: #3f51b5; /* Un tono azul que combina con el toolbar primario */
-}
-
-.content-padding {
-  padding: 20px;
+  color: var(--text-secondary);
+  margin-right: 12px !important;
 }
 
 .logout-btn {
-  color: #c62828; /* Rojo para la acción de salir */
-  font-weight: 500;
-  margin-top: 10px;
+  margin: 32px 12px 12px 12px !important;
+  color: var(--text-secondary) !important;
+  border-radius: 12px !important;
+  border: 1px solid transparent !important;
 }
 
-/* Color rojo profesional para acciones críticas */
-.btn-danger {
-  color: #d32f2f; /* Un rojo oscuro que se lee bien y no es chillón */
-  font-weight: 600;
+.logout-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: var(--danger-color) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
 }
 
-/* Opcional: añade un fondo suave al pasar el mouse para que se vea interactivo */
-.btn-danger:hover {
-  background-color: #ffebee; /* Un fondo rosado muy clarito al pasar el mouse */
-}
-
-.danger-btn {
-  color: #d32f2f;
-  font-weight: 500;
-}
-
-.danger-btn:hover {
-  background-color: #ffebee;
-}
-
-.success-btn {
-  background-color: #2e7d32; /* Verde profesional */
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.success-btn:hover {
-  background-color: #1b5e20;
-}
-.badge-activo {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.85em;
-  font-weight: bold;
-}
-
-.badge-baja {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.85em;
-  font-weight: bold;
+.logout-btn mat-icon {
+  color: inherit;
 }

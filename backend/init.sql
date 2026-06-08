@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 INSERT INTO usuarios ("nombreUsuario", "clave", "rol", "estado")
-VALUES ('admin', 'admin', 'ADMIN', 'ACTIVO')
+VALUES ('admin', crypt('admin', gen_salt('bf')), 'ADMIN', 'ACTIVO')
 ON CONFLICT ("nombreUsuario") 
 DO UPDATE SET 
     clave = EXCLUDED.clave, 

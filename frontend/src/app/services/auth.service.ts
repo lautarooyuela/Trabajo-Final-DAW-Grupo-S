@@ -1,40 +1,47 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Usuario } from '../models/usuario.model';
+import { AuthStore } from './auth.store';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/usuarios';
+  private authStore = inject(AuthStore);
   usuario = signal<Usuario | null>(null);
 
-  constructor(private http: HttpClient) {
-    const guardado = localStorage.getItem('usuario');
-    if (guardado) {
-      this.usuario.set(this.normalizarUsuario(JSON.parse(guardado)));
+  constructor() {
+    const token = this.authStore.obtenerToken();
+    if (token) {
+      this.cargarUsuarioDesdeToken(token);
     }
   }
 
-  private normalizarUsuario(usuario: Usuario): Usuario {
-    return {
-      ...usuario,
-      rol: usuario.rol ?? (usuario.nombreUsuario === 'admin' ? 'ADMIN' : 'LECTOR'),
-      estado: usuario.estado ?? 'ACTIVO',
-    };
+  private cargarUsuarioDesdeToken(token: string) {
+    try {
+      const decoded: any = jwtDecode(token);
+      // El payload del backend es { nombre: usuario.nombreUsuario, sub: usuario.id, rol: usuario.rol }
+      const usuario: Usuario = {
+        id: decoded.sub,
+        nombreUsuario: decoded.nombre,
+        rol: decoded.rol,
+        clave: '', // No necesitamos la clave en el frontend
+        estado: 'ACTIVO' // Si tiene token, está activo
+      };
+      this.usuario.set(usuario);
+    } catch (error) {
+      console.error('Error decodificando token', error);
+      this.logout();
+    }
   }
 
-  login(nombreUsuario: string, clave: string) {
-    return this.http.post<Usuario>(`${this.apiUrl}/login`, { nombreUsuario, clave });
-  }
-
-  setUsuario(u: Usuario) {
-    const normalizado = this.normalizarUsuario(u);
-    this.usuario.set(normalizado);
-    localStorage.setItem('usuario', JSON.stringify(normalizado));
+  setToken(token: string) {
+    this.authStore.guardarToken(token);
+    this.cargarUsuarioDesdeToken(token);
   }
 
   logout() {
     this.usuario.set(null);
-    localStorage.removeItem('usuario');
+    this.authStore.cerrarSesion();
   }
 
   estaLogueado(): boolean {
