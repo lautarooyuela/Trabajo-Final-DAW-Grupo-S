@@ -19,6 +19,7 @@ export const routes: Routes = [
       { path: 'proyectos/nuevo', loadComponent: () => import('./components/proyecto-form/proyecto-form.component').then(m => m.ProyectoFormComponent) },
       { path: 'proyectos/:id', loadComponent: () => import('./components/proyecto-detail/proyecto-detail.component').then(m => m.ProyectoDetailComponent) },
       { path: 'proyectos/:id/editar', loadComponent: () => import('./components/proyecto-form/proyecto-form.component').then(m => m.ProyectoFormComponent) },
+      { path: 'estadisticas', loadComponent: () => import('./components/estadisticas/estadisticas.component').then(m => m.EstadisticasComponent) },
       { path: 'usuarios', loadComponent: () => import('./components/usuarios-admin/usuarios-admin.component').then(m => m.UsuariosAdminComponent), canActivate: [adminGuard] },
       { path: '', redirectTo: 'proyectos', pathMatch: 'full' }
     ]

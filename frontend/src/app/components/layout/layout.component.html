@@ -7,6 +7,9 @@
       <a mat-list-item routerLink="/clientes" (click)="drawer.close()">
         <mat-icon matListItemIcon>people</mat-icon> Clientes
       </a>
+      <a mat-list-item routerLink="/estadisticas" (click)="drawer.close()">
+        <mat-icon matListItemIcon>bar_chart</mat-icon> Estadísticas
+      </a>
 
       @if (authService.esAdmin()) {
         <a mat-list-item routerLink="/usuarios" (click)="drawer.close()">
