@@ -25,7 +25,7 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrl: './layout.component.css'
 })
 export class LayoutComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(public authService: AuthService, private router: Router) {}
 
   logout() {
     this.authService.logout();

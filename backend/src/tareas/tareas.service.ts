@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Tarea } from './tareas.entity';
+import { Tarea, EstadoTarea } from './tareas.entity';
 import { Proyecto } from '../proyectos/proyectos.entity';
 import { CrearTareaDto, EditarTareaDto } from './dtos/tareas.dto';
 
@@ -19,12 +19,13 @@ export class TareasService {
       where: { id: dto.proyectoId },
     });
     if (!proyecto) {
-      throw new HttpException(
-        'Proyecto no encontrado',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException('Proyecto no encontrado', HttpStatus.NOT_FOUND);
     }
-    const nueva = this.tareaRepo.create({ ...dto, proyecto });
+    const nueva = this.tareaRepo.create({
+      ...dto,
+      proyecto,
+      estado: EstadoTarea.PENDIENTE,
+    });
     return this.tareaRepo.save(nueva);
   }
 
@@ -52,7 +53,7 @@ export class TareasService {
   async editar(id: number, dto: EditarTareaDto) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      await this.tareaRepo.update({ id }, dto);
+      await this.tareaRepo.update({ id }, dto as any);
       return this.buscarPorId(id);
     }
   }
@@ -60,8 +61,8 @@ export class TareasService {
   async darDeBaja(id: number) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      await this.tareaRepo.update({ id }, { estado: 'Baja' });
-      return this.buscarPorId(id);
+      await this.tareaRepo.delete(id);
+      return { deleted: true };
     }
   }
 }

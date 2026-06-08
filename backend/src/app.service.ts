@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Usuario } from './usuarios/usuarios.entity';
+import { Usuario, EstadoUsuario } from './usuarios/usuarios.entity';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -18,7 +18,7 @@ export class AppService implements OnModuleInit {
       const admin = this.usuarioRepo.create({
         nombreUsuario: 'admin',
         clave: 'admin',
-        estado: 'Activo',
+        estado: EstadoUsuario.ACTIVO,
       });
       await this.usuarioRepo.save(admin);
       console.log('Usuario admin creado: admin / admin');

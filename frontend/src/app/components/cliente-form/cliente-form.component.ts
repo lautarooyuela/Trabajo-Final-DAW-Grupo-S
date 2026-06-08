@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Cliente } from '../../models/cliente.model';
 import { ClienteService } from '../../services/cliente.service';
+import { AuthService } from '../../services/auth.service';
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
 import { COUNTRIES, Country } from '../../models/countries';
 
@@ -88,10 +89,16 @@ export class ClienteFormComponent implements OnInit {
   constructor(
     private clienteService: ClienteService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
+    if (!this.authService.puedeGestionarClientes()) {
+      this.router.navigate(['/clientes']);
+      return;
+    }
+
     const param = this.route.snapshot.paramMap.get('id');
     if (param) {
       this.editando = true;
@@ -183,6 +190,11 @@ export class ClienteFormComponent implements OnInit {
   }
 
   guardar() {
+    if (!this.authService.puedeGestionarClientes()) {
+      this.router.navigate(['/clientes']);
+      return;
+    }
+
     this.validarEmail();
     this.validarTelefono();
 

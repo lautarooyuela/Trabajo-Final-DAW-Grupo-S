@@ -1,8 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Proyecto } from './proyectos.entity';
-import { Cliente } from '../clientes/clientes.entity';
+import { Proyecto, EstadoProyecto } from './proyectos.entity';
+import { Cliente, EstadoCliente } from '../clientes/clientes.entity';
 import { CrearProyectoDto, EditarProyectoDto } from './dtos/proyectos.dto';
 
 @Injectable()
@@ -15,18 +15,15 @@ export class ProyectosService {
   ) {}
 
   async crear(dto: CrearProyectoDto) {
-    const nuevo = this.proyectoRepo.create(dto);
+    const nuevo = this.proyectoRepo.create(dto as any) as unknown as Proyecto;
     if (dto.clienteId) {
       const cliente = await this.clienteRepo.findOne({
         where: { id: dto.clienteId },
       });
       if (!cliente) {
-        throw new HttpException(
-          'Cliente no encontrado',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);
       }
-      if (cliente.estado !== 'Activo') {
+      if (cliente.estado !== EstadoCliente.ACTIVO) {
         throw new HttpException(
           'Solo se puede asignar un cliente en estado Activo',
           HttpStatus.BAD_REQUEST,
@@ -74,7 +71,7 @@ export class ProyectosService {
               HttpStatus.NOT_FOUND,
             );
           }
-          if (cliente.estado !== 'Activo') {
+          if (cliente.estado !== EstadoCliente.ACTIVO) {
             throw new HttpException(
               'Solo se puede asignar un cliente en estado Activo',
               HttpStatus.BAD_REQUEST,
@@ -92,7 +89,7 @@ export class ProyectosService {
   async darDeBaja(id: number) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      await this.proyectoRepo.update({ id }, { estado: 'Baja' });
+      await this.proyectoRepo.update({ id }, { estado: EstadoProyecto.BAJA });
       return this.buscarPorId(id);
     }
   }

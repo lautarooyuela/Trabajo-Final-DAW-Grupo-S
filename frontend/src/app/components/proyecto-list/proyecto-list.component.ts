@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Proyecto } from '../../models/proyecto.model';
 import { ProyectoService } from '../../services/proyecto.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-proyecto-list',
@@ -11,7 +12,9 @@ import { ProyectoService } from '../../services/proyecto.service';
   template: `
     <h2>Proyectos</h2>
     <div class="actions-bar">
-      <button class="success-btn" [routerLink]="['/proyectos/nuevo']">Nuevo Proyecto</button>
+      @if (authService.puedeCrear()) {
+        <button class="success-btn" [routerLink]="['/proyectos/nuevo']">Nuevo Proyecto</button>
+      }
       <button class="export-btn" (click)="exportarCSV()">Exportar CSV</button>
     </div>
 
@@ -27,11 +30,21 @@ import { ProyectoService } from '../../services/proyecto.service';
     <table>
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Estado</th>
-          <th>Cliente</th>
-          <th>Tareas</th>
+          <th (click)="ordenar('id')" style="cursor: pointer; user-select: none;">
+            ID {{ sortField() === 'id' ? (sortAsc() ? '▲' : '▼') : '' }}
+          </th>
+          <th (click)="ordenar('nombre')" style="cursor: pointer; user-select: none;">
+            Nombre {{ sortField() === 'nombre' ? (sortAsc() ? '▲' : '▼') : '' }}
+          </th>
+          <th (click)="ordenar('estado')" style="cursor: pointer; user-select: none;">
+            Estado {{ sortField() === 'estado' ? (sortAsc() ? '▲' : '▼') : '' }}
+          </th>
+          <th (click)="ordenar('cliente')" style="cursor: pointer; user-select: none;">
+            Cliente {{ sortField() === 'cliente' ? (sortAsc() ? '▲' : '▼') : '' }}
+          </th>
+          <th (click)="ordenar('tareas')" style="cursor: pointer; user-select: none;">
+            Tareas {{ sortField() === 'tareas' ? (sortAsc() ? '▲' : '▼') : '' }}
+          </th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -41,19 +54,26 @@ import { ProyectoService } from '../../services/proyecto.service';
             <td>{{ p.id }}</td>
             <td>{{ p.nombre }}</td>
             <td>
-              <select class="status-select" [value]="p.estado" (change)="cambiarEstado(p, $event)">
-                <option value="Activo">Activo</option>
-                <option value="Finalizado">Finalizado</option>
-                <option value="Baja">Baja</option>
+              <select class="status-select" [value]="p.estado" (change)="cambiarEstado(p, $event)" [disabled]="!authService.puedeEditar()">
+                <option value="ACTIVO">Activo</option>
+                <option value="FINALIZADO">Finalizado</option>
+                <option value="BAJA">Baja</option>
               </select>
             </td>
             <td>{{ p.cliente?.nombre || 'Interno' }}</td>
             <td>
-              <span class="badge-tareas">{{ contarTareas(p) }}</span>
+              <a [routerLink]="['/proyectos', p.id]" style="text-decoration: none;">
+                <span class="badge-tareas" style="cursor: pointer;" title="Ver tareas">{{ contarTareas(p) }}</span>
+              </a>
             </td>
             <td>
+              @if (authService.puedeCrear()) {
+                <button class="btn-tareas" [routerLink]="['/proyectos', p.id]">Crear tareas</button>
+              }
               <button class="btn-ver" [routerLink]="['/proyectos', p.id]">Ver</button>
-              <button class="btn-editar" [routerLink]="['/proyectos', p.id, 'editar']">Editar</button>
+              @if (authService.puedeEditar()) {
+                <button class="btn-editar" [routerLink]="['/proyectos', p.id, 'editar']">Editar</button>
+              }
             </td>
           </tr>
         }
@@ -103,9 +123,12 @@ import { ProyectoService } from '../../services/proyecto.service';
     }
     
     .status-select { padding: 4px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; }
+    .status-select:disabled { cursor: not-allowed; background: #f5f5f5; color: #888; }
     .btn-ver { background-color: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb; border-radius: 4px; padding: 4px 10px; margin-right: 6px; cursor: pointer; }
+    .btn-tareas { background-color: #eef2ff; color: #3949ab; border: 1px solid #c5cae9; border-radius: 4px; padding: 4px 10px; margin-right: 6px; cursor: pointer; }
     .btn-editar { background-color: #f5f5f5; color: #555; border: 1px solid #ddd; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
     .btn-ver:hover { background-color: #bbdefb; }
+    .btn-tareas:hover { background-color: #dfe3ff; }
     .btn-editar:hover { background-color: #e0e0e0; }
 
     .badge-tareas {
@@ -128,14 +151,50 @@ import { ProyectoService } from '../../services/proyecto.service';
 export class ProyectoListComponent implements OnInit {
   proyectos = signal<Proyecto[]>([]);
   busqueda = '';
+  sortField = signal<string>('id');
+  sortAsc = signal<boolean>(true);
 
   get proyectosFiltrados(): Proyecto[] {
     const termino = this.busqueda.trim().toLowerCase();
-    if (!termino) return this.proyectos();
-    return this.proyectos().filter(p => p.nombre.toLowerCase().includes(termino));
+    let res = this.proyectos();
+    
+    if (termino) {
+      res = res.filter(p => p.nombre.toLowerCase().includes(termino));
+    }
+
+    const field = this.sortField();
+    const asc = this.sortAsc();
+
+    return [...res].sort((a, b) => {
+      let valA: any;
+      let valB: any;
+
+      if (field === 'cliente') {
+        valA = a.cliente?.nombre || 'Interno';
+        valB = b.cliente?.nombre || 'Interno';
+      } else if (field === 'tareas') {
+        valA = a.tareas?.length || 0;
+        valB = b.tareas?.length || 0;
+      } else {
+        valA = (a as any)[field];
+        valB = (b as any)[field];
+      }
+
+      if (typeof valA === 'string') {
+        valA = valA.toLowerCase();
+        valB = valB.toLowerCase();
+      }
+
+      if (valA === undefined || valA === null) return asc ? 1 : -1;
+      if (valB === undefined || valB === null) return asc ? -1 : 1;
+
+      if (valA < valB) return asc ? -1 : 1;
+      if (valA > valB) return asc ? 1 : -1;
+      return 0;
+    });
   }
 
-  constructor(private proyectoService: ProyectoService, private router: Router) {}
+  constructor(private proyectoService: ProyectoService, private router: Router, public authService: AuthService) {}
 
   ngOnInit() { this.cargar(); }
 
@@ -148,7 +207,20 @@ export class ProyectoListComponent implements OnInit {
     return total === 1 ? '1 tarea' : `${total} tareas`;
   }
 
+  ordenar(campo: string) {
+    if (this.sortField() === campo) {
+      this.sortAsc.update(asc => !asc);
+    } else {
+      this.sortField.set(campo);
+      this.sortAsc.set(true);
+    }
+  }
+
   cambiarEstado(proyecto: Proyecto, event: Event) {
+    if (!this.authService.puedeEditar()) {
+      return;
+    }
+
     const select = event.target as HTMLSelectElement;
     const nuevoEstado = select.value;
 
@@ -163,7 +235,7 @@ export class ProyectoListComponent implements OnInit {
   }
 
   exportarCSV() {
-    const datos = this.proyectos();
+    const datos = this.proyectosFiltrados;
     if (datos.length === 0) return;
 
     const cabeceras = ['ID', 'Nombre', 'Estado', 'Cliente'];

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { TareasService } from './tareas.service';
 import { CrearTareaDto, EditarTareaDto } from './dtos/tareas.dto';
 
@@ -27,7 +36,7 @@ export class TareasController {
   }
 
   @Delete(':id')
-  darDeBaja(@Param('id', ParseIntPipe) id: number) {
+  eliminar(@Param('id', ParseIntPipe) id: number) {
     return this.tareasService.darDeBaja(id);
   }
 }

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Patch, Body, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { CrearUsuarioDto, EditarUsuarioDto } from './dtos/usuarios.dto';
 
@@ -27,7 +35,11 @@ export class UsuariosController {
   }
 
   @Post('login')
-  login(@Body() body: { nombreUsuario: string; clave: string }) {
-    return this.usuariosService.login(body.nombreUsuario, body.clave);
+  async login(@Body() body: { nombreUsuario: string; clave: string }) {
+    const usuario = await this.usuariosService.login(
+      body.nombreUsuario,
+      body.clave,
+    );
+    return usuario;
   }
 }

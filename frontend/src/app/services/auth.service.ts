@@ -10,8 +10,16 @@ export class AuthService {
   constructor(private http: HttpClient) {
     const guardado = localStorage.getItem('usuario');
     if (guardado) {
-      this.usuario.set(JSON.parse(guardado));
+      this.usuario.set(this.normalizarUsuario(JSON.parse(guardado)));
     }
+  }
+
+  private normalizarUsuario(usuario: Usuario): Usuario {
+    return {
+      ...usuario,
+      rol: usuario.rol ?? (usuario.nombreUsuario === 'admin' ? 'ADMIN' : 'LECTOR'),
+      estado: usuario.estado ?? 'ACTIVO',
+    };
   }
 
   login(nombreUsuario: string, clave: string) {
@@ -19,8 +27,9 @@ export class AuthService {
   }
 
   setUsuario(u: Usuario) {
-    this.usuario.set(u);
-    localStorage.setItem('usuario', JSON.stringify(u));
+    const normalizado = this.normalizarUsuario(u);
+    this.usuario.set(normalizado);
+    localStorage.setItem('usuario', JSON.stringify(normalizado));
   }
 
   logout() {
@@ -30,5 +39,27 @@ export class AuthService {
 
   estaLogueado(): boolean {
     return this.usuario() !== null;
+  }
+
+  esAdmin(): boolean {
+    return this.usuario()?.rol === 'ADMIN';
+  }
+
+  puedeCrear(): boolean {
+    const rol = this.usuario()?.rol;
+    return rol === 'ADMIN' || rol === 'EDITOR';
+  }
+
+  puedeEditar(): boolean {
+    return this.puedeCrear();
+  }
+
+  puedeEliminar(): boolean {
+    return this.esAdmin();
+  }
+
+  puedeGestionarClientes(): boolean {
+    const rol = this.usuario()?.rol;
+    return rol === 'ADMIN' || rol === 'EDITOR';
   }
 }

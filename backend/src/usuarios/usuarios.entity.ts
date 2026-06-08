@@ -1,16 +1,38 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
+export enum EstadoUsuario {
+  ACTIVO = 'ACTIVO',
+  BAJA = 'BAJA',
+}
+
+export enum RolUsuario {
+  ADMIN = 'ADMIN',
+  EDITOR = 'EDITOR',
+  LECTOR = 'LECTOR',
+}
+
 @Entity({ name: 'usuarios' })
 export class Usuario {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true, nullable: false })
-  nombreUsuario: string;
+  nombreUsuario!: string;
 
   @Column({ nullable: false })
-  clave: string;
+  clave!: string;
 
-  @Column({ nullable: false, default: 'Activo' })
-  estado: string;
+  @Column({
+    type: 'enum',
+    enum: RolUsuario,
+    default: RolUsuario.LECTOR,
+  })
+  rol!: RolUsuario;
+
+  @Column({
+    type: 'enum',
+    enum: EstadoUsuario,
+    default: EstadoUsuario.ACTIVO,
+  })
+  estado!: EstadoUsuario;
 }

@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Usuario } from './usuarios.entity';
+import { Usuario, EstadoUsuario, RolUsuario } from './usuarios.entity';
 import { CrearUsuarioDto, EditarUsuarioDto } from './dtos/usuarios.dto';
 
 @Injectable()
@@ -10,6 +10,15 @@ export class UsuariosService {
     @InjectRepository(Usuario)
     private usuarioRepo: Repository<Usuario>,
   ) {}
+
+  private sinClave(usuario: Usuario) {
+    const { clave, ...resto } = usuario;
+    return resto;
+  }
+
+  private sinClaveListado(usuarios: Usuario[]) {
+    return usuarios.map((usuario) => this.sinClave(usuario));
+  }
 
   async crear(dto: CrearUsuarioDto) {
     const existe = await this.usuarioRepo.findOne({
@@ -21,12 +30,19 @@ export class UsuariosService {
         HttpStatus.CONFLICT,
       );
     }
-    const nuevo = this.usuarioRepo.create(dto);
-    return this.usuarioRepo.save(nuevo);
+
+    const nuevo = this.usuarioRepo.create({
+      ...dto,
+      rol: dto.rol ?? RolUsuario.LECTOR,
+      estado: EstadoUsuario.ACTIVO,
+    });
+    const guardado = await this.usuarioRepo.save(nuevo);
+    return this.sinClave(guardado);
   }
 
   async buscarTodos() {
-    return this.usuarioRepo.find();
+    const usuarios = await this.usuarioRepo.find();
+    return this.sinClaveListado(usuarios);
   }
 
   async buscarPorId(id: number) {
@@ -37,7 +53,7 @@ export class UsuariosService {
         HttpStatus.NOT_FOUND,
       );
     }
-    return u;
+    return this.sinClave(u);
   }
 
   async buscarPorNombreUsuario(nombreUsuario: string) {
@@ -46,28 +62,33 @@ export class UsuariosService {
 
   async editar(id: number, dto: EditarUsuarioDto) {
     const existe = await this.buscarPorId(id);
-    if (existe) {
-      await this.usuarioRepo.update({ id }, dto);
-      return this.buscarPorId(id);
-    }
+    if (!existe) return;
+
+    await this.usuarioRepo.update({ id }, dto as any);
+    return this.buscarPorId(id);
   }
 
   async login(nombreUsuario: string, clave: string) {
     const usuario = await this.usuarioRepo.findOne({
       where: { nombreUsuario, clave },
     });
+
     if (!usuario) {
       throw new HttpException(
         'Credenciales inválidas',
         HttpStatus.UNAUTHORIZED,
       );
     }
-    if (usuario.estado !== 'Activo') {
-      throw new HttpException(
-        'Usuario dado de baja',
-        HttpStatus.FORBIDDEN,
-      );
+
+    if (usuario.estado !== EstadoUsuario.ACTIVO) {
+      throw new HttpException('Usuario dado de baja', HttpStatus.FORBIDDEN);
     }
-    return usuario;
+
+    if (!usuario.rol) {
+      usuario.rol =
+        nombreUsuario === 'admin' ? RolUsuario.ADMIN : RolUsuario.LECTOR;
+    }
+
+    return this.sinClave(usuario);
   }
 }

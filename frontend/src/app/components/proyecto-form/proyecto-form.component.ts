@@ -5,6 +5,7 @@ import { Proyecto } from '../../models/proyecto.model';
 import { Cliente } from '../../models/cliente.model';
 import { ProyectoService } from '../../services/proyecto.service';
 import { ClienteService } from '../../services/cliente.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-proyecto-form',
@@ -21,9 +22,9 @@ import { ClienteService } from '../../services/cliente.service';
           @if (editando) {
             <label>Estado:</label>
             <select [(ngModel)]="proyecto.estado" name="estado">
-              <option value="Activo">Activo</option>
-              <option value="Finalizado">Finalizado</option>
-              <option value="Baja">Baja</option>
+              <option value="ACTIVO">Activo</option>
+              <option value="FINALIZADO">Finalizado</option>
+              <option value="BAJA">Baja</option>
             </select>
           }
           
@@ -70,10 +71,16 @@ export class ProyectoFormComponent implements OnInit {
     private proyectoService: ProyectoService,
     private clienteService: ClienteService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
+    if (!this.authService.puedeCrear()) {
+      this.router.navigate(['/proyectos']);
+      return;
+    }
+
     this.clienteService.obtenerActivos().subscribe(data => this.clientesActivos.set(data));
     const param = this.route.snapshot.paramMap.get('id');
     if (param) {

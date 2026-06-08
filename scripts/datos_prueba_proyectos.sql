@@ -61,7 +61,7 @@ INSERT INTO public.proyectos VALUES (5, 'Tpfinal5', 'Activo', 5);
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.usuarios VALUES (1, 'admin', 'admin', 'Activo');
+INSERT INTO public.usuarios VALUES (1, 'admin', 'admin', 'Activo', 'ADMIN');
 
 
 --

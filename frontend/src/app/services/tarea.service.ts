@@ -20,6 +20,10 @@ export class TareaService {
     return this.http.patch<Tarea>(`${this.apiUrl}/${id}`, tarea);
   }
 
+  eliminar(id: number) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
   darDeBaja(id: number) {
     return this.http.delete<Tarea>(`${this.apiUrl}/${id}`);
   }

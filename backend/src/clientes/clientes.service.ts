@@ -1,9 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Cliente } from './clientes.entity';
+import { Cliente, EstadoCliente } from './clientes.entity';
 import { CrearClienteDto, EditarClienteDto } from './dtos/clientes.dto';
-import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
 
 @Injectable()
 export class ClientesService {
@@ -12,30 +11,13 @@ export class ClientesService {
     private clienteRepo: Repository<Cliente>,
   ) {}
 
-  private normalizarTelefono(telefono: string): string {
-    if (!telefono) return telefono;
-    
-    try {
-      // Detectar automáticamente el país del teléfono E.164
-      const parsed = parsePhoneNumber(telefono);
-      if (parsed && parsed.isValid()) {
-        // Retornar en formato E.164: +34912345678
-        return parsed.format('E.164');
-      }
-    } catch (e) {
-      // Si no se puede parsear, retornar tal cual (la validación en DTO fallará)
-    }
-    
-    return telefono;
-  }
-
   async crear(dto: CrearClienteDto) {
-    // Normalizar teléfono a E.164
-    const clienteNormalizado = {
+    const nuevo = this.clienteRepo.create({
       ...dto,
-      telefono: this.normalizarTelefono(dto.telefono),
-    };
-    const nuevo = this.clienteRepo.create(clienteNormalizado);
+      estado: dto.estado
+        ? (dto.estado as unknown as EstadoCliente)
+        : EstadoCliente.ACTIVO,
+    } as any);
     return this.clienteRepo.save(nuevo);
   }
 
@@ -58,16 +40,15 @@ export class ClientesService {
   }
 
   async buscarActivos() {
-    return this.clienteRepo.find({ where: { estado: 'Activo' } });
+    return this.clienteRepo.find({ where: { estado: EstadoCliente.ACTIVO } });
   }
 
   async editar(id: number, dto: EditarClienteDto) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      // Normalizar teléfono si viene en el DTO
-      const dtoNormalizado = { ...dto };
-      if (dto.telefono) {
-        dtoNormalizado.telefono = this.normalizarTelefono(dto.telefono);
+      const dtoNormalizado: any = { ...dto };
+      if (dto.estado) {
+        dtoNormalizado.estado = dto.estado as unknown as EstadoCliente;
       }
       await this.clienteRepo.update({ id }, dtoNormalizado);
       return this.buscarPorId(id);
@@ -76,16 +57,16 @@ export class ClientesService {
 
   async darDeBaja(id: number) {
     const cliente = await this.buscarPorId(id);
-    const tieneProyectos = cliente.proyectos && cliente.proyectos.some(
-      (p) => p.estado !== 'Baja',
-    );
+    const tieneProyectos =
+      cliente.proyectos &&
+      cliente.proyectos.some((p) => p.estado !== (EstadoCliente.BAJA as any));
     if (tieneProyectos) {
       throw new HttpException(
         'No se puede dar de baja un cliente que está registrado en proyectos',
         HttpStatus.BAD_REQUEST,
       );
     }
-    await this.clienteRepo.update({ id }, { estado: 'Baja' });
+    await this.clienteRepo.update({ id }, { estado: EstadoCliente.BAJA });
     return this.buscarPorId(id);
   }
 }

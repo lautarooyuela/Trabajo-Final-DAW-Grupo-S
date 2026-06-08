@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ProyectosService } from './proyectos.service';
 import { CrearProyectoDto, EditarProyectoDto } from './dtos/proyectos.dto';
 
@@ -22,7 +31,10 @@ export class ProyectosController {
   }
 
   @Patch(':id')
-  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarProyectoDto) {
+  editar(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: EditarProyectoDto,
+  ) {
     return this.proyectosService.editar(id, dto);
   }
 

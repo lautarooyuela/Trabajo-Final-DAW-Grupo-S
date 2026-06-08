@@ -1,18 +1,37 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Proyecto } from '../proyectos/proyectos.entity';
+
+export enum EstadoTarea {
+  PENDIENTE = 'PENDIENTE',
+  FINALIZADA = 'FINALIZADA',
+  BAJA = 'BAJA',
+}
 
 @Entity({ name: 'tareas' })
 export class Tarea {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ nullable: false })
-  descripcion: string;
+  descripcion!: string;
 
-  @Column({ nullable: false, default: 'Pendiente' })
-  estado: string;
+  @Column({
+    type: 'enum',
+    enum: EstadoTarea,
+    default: EstadoTarea.PENDIENTE,
+  })
+  estado!: EstadoTarea;
+
+  @Column({ name: 'id_proyecto' })
+  idProyecto!: number;
 
   @ManyToOne(() => Proyecto, (proyecto) => proyecto.tareas)
-  @JoinColumn()
-  proyecto: Proyecto;
+  @JoinColumn({ name: 'id_proyecto' })
+  proyecto!: Proyecto;
 }

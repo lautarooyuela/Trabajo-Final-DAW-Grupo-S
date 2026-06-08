@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,7 @@ export const routes: Routes = [
       { path: 'proyectos/nuevo', loadComponent: () => import('./components/proyecto-form/proyecto-form.component').then(m => m.ProyectoFormComponent) },
       { path: 'proyectos/:id', loadComponent: () => import('./components/proyecto-detail/proyecto-detail.component').then(m => m.ProyectoDetailComponent) },
       { path: 'proyectos/:id/editar', loadComponent: () => import('./components/proyecto-form/proyecto-form.component').then(m => m.ProyectoFormComponent) },
+      { path: 'usuarios', loadComponent: () => import('./components/usuarios-admin/usuarios-admin.component').then(m => m.UsuariosAdminComponent), canActivate: [adminGuard] },
       { path: '', redirectTo: 'proyectos', pathMatch: 'full' }
     ]
   },
