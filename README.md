@@ -76,6 +76,118 @@ Abrir el navegador en http://localhost:4200 e ingresar con:
 
 - Contraseña: admin
 
+### 4. Despliegue con Nginx
+
+Para el entorno de producción se utiliza Nginx como servidor web y proxy inverso.
+
+#### Requisitos
+
+- Nginx instalado en `C:\nginx-1.28.3\` (descargar de https://nginx.org/en/download.html y extraer en esa ruta).
+- PM2 instalado globalmente: `npm install -g pm2`.
+- OpenSSL o similar para generar certificados SSL autofirmados (opcional, solo si se requiere HTTPS).
+
+#### Backend
+
+```bash
+cd backend
+npm run deploy
+```
+
+Este comando compila el proyecto (`npm run build`) e inicia el proceso con PM2 usando `ecosystem.config.js`. El backend corre en `http://localhost:3000`.
+
+#### Frontend
+
+```bash
+cd frontend
+npm run deploy
+```
+
+Este comando compila el frontend, limpia `C:\nginx-1.28.3\html\` y copia los archivos compilados a esa carpeta para que Nginx los sirva.
+
+#### Configuración de Nginx
+
+Crear el archivo `C:\nginx-1.28.3\conf\nginx.conf` con el siguiente contenido:
+
+```nginx
+events {
+    worker_connections 1024;
+}
+
+http {
+    include mime.types;
+    default_type application/octet-stream;
+
+    server {
+        listen 80;
+        server_name localhost;
+
+        # Frontend - archivos estáticos
+        root C:/nginx-1.28.3/html;
+        index index.html;
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Backend - proxy inverso
+        location /api/ {
+            proxy_pass http://localhost:3000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
+```
+
+> **Nota:** Si el backend usa un prefijo global como `/api`, ajustar el `location` y `proxy_pass` según corresponda.
+
+#### SSL (HTTPS) - Opcional
+
+Si se desea habilitar HTTPS, crear los certificados y agregar un bloque `server` con SSL:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    ssl_certificate C:/nginx-1.28.3/ssl/server.crt;
+    ssl_certificate_key C:/nginx-1.28.3/ssl/server.key;
+
+    root C:/nginx-1.28.3/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:3000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Los archivos SSL deben colocarse en `C:\nginx-1.28.3\ssl\`:
+- `server.crt` — Certificado SSL (público).
+- `server.key` — Clave privada del certificado.
+
+Para generar certificados autofirmados de prueba con OpenSSL:
+
+```bash
+mkdir C:\nginx-1.28.3\ssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 ^
+  -keyout C:\nginx-1.28.3\ssl\server.key ^
+  -out C:\nginx-1.28.3\ssl\server.crt ^
+  -subj "/C=AR/ST=BuenosAires/L=BuenosAires/O=TPFinal/CN=localhost"
+```
+
+En producción usar certificados de una CA real (Let's Encrypt, etc.).
+
 ## Estructura del proyecto
 
 ```
