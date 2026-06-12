@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Tarea, EstadoTarea } from './tareas.entity';
 import { Proyecto } from '../proyectos/proyectos.entity';
 import { CrearTareaDto, EditarTareaDto } from './dtos/tareas.dto';
+import { HistorialService } from '../historial/historial.service';
 
 @Injectable()
 export class TareasService {
@@ -12,9 +13,10 @@ export class TareasService {
     private tareaRepo: Repository<Tarea>,
     @InjectRepository(Proyecto)
     private proyectoRepo: Repository<Proyecto>,
+    private historialService: HistorialService,
   ) {}
 
-  async crear(dto: CrearTareaDto) {
+  async crear(dto: CrearTareaDto, usuarioNombre: string) {
     const proyecto = await this.proyectoRepo.findOne({
       where: { id: dto.proyectoId },
     });
@@ -26,7 +28,9 @@ export class TareasService {
       proyecto,
       estado: EstadoTarea.PENDIENTE,
     });
-    return this.tareaRepo.save(nueva);
+    const guardada = await this.tareaRepo.save(nueva);
+    await this.historialService.registrar('tarea', guardada.id, usuarioNombre, 'crear', `Se creó la tarea "${guardada.descripcion}"`);
+    return guardada;
   }
 
   async buscarPorProyecto(proyectoId: number) {
@@ -50,19 +54,21 @@ export class TareasService {
     return t;
   }
 
-  async editar(id: number, dto: EditarTareaDto) {
+  async editar(id: number, dto: EditarTareaDto, usuarioNombre: string) {
     const existe = await this.buscarPorId(id);
     if (existe) {
       await this.tareaRepo.update({ id }, dto as any);
+      await this.historialService.registrar('tarea', id, usuarioNombre, 'editar', `Se editó la tarea "${existe.descripcion}"`);
       return this.buscarPorId(id);
     }
   }
 
-  async darDeBaja(id: number) {
+  async darDeBaja(id: number, usuarioNombre: string) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      await this.tareaRepo.delete(id);
-      return { deleted: true };
+      await this.tareaRepo.update({ id }, { estado: EstadoTarea.BAJA });
+      await this.historialService.registrar('tarea', id, usuarioNombre, 'darBaja', `Se dio de baja la tarea "${existe.descripcion}"`);
+      return this.buscarPorId(id);
     }
   }
 }

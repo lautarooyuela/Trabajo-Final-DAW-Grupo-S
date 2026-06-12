@@ -3,9 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Proyecto } from '../../models/proyecto.model';
 import { Cliente } from '../../models/cliente.model';
+import { Historial } from '../../models/historial.model';
 import { ProyectoService } from '../../services/proyecto.service';
 import { ClienteService } from '../../services/cliente.service';
 import { AuthService } from '../../services/auth.service';
+import { HistorialService } from '../../services/historial.service';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -59,6 +61,34 @@ import { MatIconModule } from '@angular/material/icon';
         @if (error()) {
           <div class="alert error-alert">
             <mat-icon>error</mat-icon> {{ error() }}
+          </div>
+        }
+
+        @if (editando && historial().length > 0) {
+          <div class="historial-section">
+            <h4>Historial de cambios</h4>
+            <table class="historial-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Detalle</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (h of historial(); track h.id) {
+                  <tr>
+                    <td>{{ formatearFecha(h.fecha) }}</td>
+                    <td>{{ h.usuarioNombre }}</td>
+                    <td>
+                      <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                    </td>
+                    <td>{{ h.detalle }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
         }
       </div>
@@ -174,6 +204,17 @@ import { MatIconModule } from '@angular/material/icon';
     }
 
     .error-alert { background-color: rgba(239, 68, 68, 0.1); color: var(--danger-color); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    .historial-section { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; }
+    .historial-section h4 { margin: 0 0 10px 0; color: var(--text-primary); }
+
+    .historial-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    .historial-table th { background-color: #0f172a; color: var(--text-secondary); padding: 8px; text-align: left; }
+    .historial-table td { padding: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+
+    .accion-crear { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-editar { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-darBaja { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
   `]
 })
 export class ProyectoFormComponent implements OnInit {
@@ -183,10 +224,12 @@ export class ProyectoFormComponent implements OnInit {
   clientesActivos = signal<Cliente[]>([]);
   clienteSeleccionado: number | null = null;
   error = signal('');
+  historial = signal<Historial[]>([]);
 
   constructor(
     private proyectoService: ProyectoService,
     private clienteService: ClienteService,
+    private historialService: HistorialService,
     private route: ActivatedRoute,
     private router: Router,
     public authService: AuthService
@@ -207,6 +250,7 @@ export class ProyectoFormComponent implements OnInit {
         this.proyecto = { nombre: p.nombre, estado: p.estado };
         this.clienteSeleccionado = p.cliente ? p.cliente.id : null;
       });
+      this.historialService.obtenerPorEntidad('proyecto', this.id).subscribe(data => this.historial.set(data));
     }
   }
 
@@ -226,6 +270,17 @@ export class ProyectoFormComponent implements OnInit {
         error: (err) => this.error.set(err.error?.message || 'Error al crear')
       });
     }
+  }
+
+  formatearFecha(fecha: string): string {
+    return new Date(fecha).toLocaleString('es-AR');
+  }
+
+  claseAccion(accion: string): string {
+    if (accion === 'crear') return 'accion-crear';
+    if (accion === 'editar') return 'accion-editar';
+    if (accion === 'darBaja') return 'accion-darBaja';
+    return '';
   }
 
   volver() {

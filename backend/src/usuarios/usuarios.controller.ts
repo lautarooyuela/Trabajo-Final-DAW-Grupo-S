@@ -6,6 +6,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Headers,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
@@ -26,8 +27,8 @@ export class UsuariosController {
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
-  crear(@Body() dto: CrearUsuarioDto) {
-    return this.usuariosService.crear(dto);
+  crear(@Body() dto: CrearUsuarioDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.usuariosService.crear(dto, usuarioNombre);
   }
 
   @Get()
@@ -44,8 +45,8 @@ export class UsuariosController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Editar un usuario existente' })
-  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarUsuarioDto) {
-    return this.usuariosService.editar(id, dto);
+  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarUsuarioDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.usuariosService.editar(id, dto, usuarioNombre);
   }
 
   @Post('login')

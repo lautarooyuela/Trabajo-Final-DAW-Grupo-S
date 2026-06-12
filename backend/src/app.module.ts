@@ -9,6 +9,7 @@ import { ClientesModule } from './clientes/clientes.module';
 import { ProyectosModule } from './proyectos/proyectos.module';
 import { TareasModule } from './tareas/tareas.module';
 import { AuthModule } from './auth/auth.module';
+import { HistorialModule } from './historial/historial.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AuthModule } from './auth/auth.module';
     ProyectosModule,
     TareasModule,
     AuthModule,
+    HistorialModule,
   ],
   controllers: [AppController],
   providers: [AppService],

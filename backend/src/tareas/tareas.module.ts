@@ -4,9 +4,10 @@ import { Tarea } from './tareas.entity';
 import { Proyecto } from '../proyectos/proyectos.entity';
 import { TareasController } from './tareas.controller';
 import { TareasService } from './tareas.service';
+import { HistorialModule } from '../historial/historial.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tarea, Proyecto])],
+  imports: [TypeOrmModule.forFeature([Tarea, Proyecto]), HistorialModule],
   controllers: [TareasController],
   providers: [TareasService],
 })

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Proyecto, EstadoProyecto } from './proyectos.entity';
 import { Cliente, EstadoCliente } from '../clientes/clientes.entity';
 import { CrearProyectoDto, EditarProyectoDto } from './dtos/proyectos.dto';
+import { HistorialService } from '../historial/historial.service';
 
 @Injectable()
 export class ProyectosService {
@@ -12,9 +13,10 @@ export class ProyectosService {
     private proyectoRepo: Repository<Proyecto>,
     @InjectRepository(Cliente)
     private clienteRepo: Repository<Cliente>,
+    private historialService: HistorialService,
   ) {}
 
-  async crear(dto: CrearProyectoDto) {
+  async crear(dto: CrearProyectoDto, usuarioNombre: string) {
     const nuevo = this.proyectoRepo.create(dto as any) as unknown as Proyecto;
     if (dto.clienteId) {
       const cliente = await this.clienteRepo.findOne({
@@ -31,7 +33,9 @@ export class ProyectosService {
       }
       nuevo.cliente = cliente;
     }
-    return this.proyectoRepo.save(nuevo);
+    const guardado = await this.proyectoRepo.save(nuevo);
+    await this.historialService.registrar('proyecto', guardado.id, usuarioNombre, 'crear', `Se creó el proyecto "${guardado.nombre}"`);
+    return guardado;
   }
 
   async buscarTodos() {
@@ -54,7 +58,7 @@ export class ProyectosService {
     return p;
   }
 
-  async editar(id: number, dto: EditarProyectoDto) {
+  async editar(id: number, dto: EditarProyectoDto, usuarioNombre: string) {
     const existe = await this.buscarPorId(id);
     if (existe) {
       const updateData: any = { ...dto };
@@ -82,14 +86,16 @@ export class ProyectosService {
         delete updateData.clienteId;
       }
       await this.proyectoRepo.update({ id }, updateData);
+      await this.historialService.registrar('proyecto', id, usuarioNombre, 'editar', `Se editó el proyecto "${existe.nombre}"`);
       return this.buscarPorId(id);
     }
   }
 
-  async darDeBaja(id: number) {
+  async darDeBaja(id: number, usuarioNombre: string) {
     const existe = await this.buscarPorId(id);
     if (existe) {
       await this.proyectoRepo.update({ id }, { estado: EstadoProyecto.BAJA });
+      await this.historialService.registrar('proyecto', id, usuarioNombre, 'darBaja', `Se dio de baja el proyecto "${existe.nombre}"`);
       return this.buscarPorId(id);
     }
   }

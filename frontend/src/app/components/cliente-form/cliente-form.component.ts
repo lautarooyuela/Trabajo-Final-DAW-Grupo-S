@@ -2,8 +2,10 @@ import { Component, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Cliente } from '../../models/cliente.model';
+import { Historial } from '../../models/historial.model';
 import { ClienteService } from '../../services/cliente.service';
 import { AuthService } from '../../services/auth.service';
+import { HistorialService } from '../../services/historial.service';
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
 import { COUNTRIES, Country } from '../../models/countries';
 import { MatIconModule } from '@angular/material/icon';
@@ -69,6 +71,34 @@ import { MatIconModule } from '@angular/material/icon';
         @if (error()) {
           <div class="alert error-alert">
             <mat-icon>error</mat-icon> {{ error() }}
+          </div>
+        }
+
+        @if (editando && historial().length > 0) {
+          <div class="historial-section">
+            <h4>Historial de cambios</h4>
+            <table class="historial-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Detalle</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (h of historial(); track h.id) {
+                  <tr>
+                    <td>{{ formatearFecha(h.fecha) }}</td>
+                    <td>{{ h.usuarioNombre }}</td>
+                    <td>
+                      <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                    </td>
+                    <td>{{ h.detalle }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
         }
       </div>
@@ -190,6 +220,17 @@ import { MatIconModule } from '@angular/material/icon';
     }
 
     .error-alert { background-color: rgba(239, 68, 68, 0.1); color: var(--danger-color); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    .historial-section { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; }
+    .historial-section h4 { margin: 0 0 10px 0; color: var(--text-primary); }
+
+    .historial-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    .historial-table th { background-color: #0f172a; color: var(--text-secondary); padding: 8px; text-align: left; }
+    .historial-table td { padding: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+
+    .accion-crear { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-editar { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-darBaja { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
   `]
 })
 export class ClienteFormComponent implements OnInit {
@@ -199,13 +240,15 @@ export class ClienteFormComponent implements OnInit {
   error = signal('');
   emailError = signal('');
   telefonoError = signal('');
+  historial = signal<Historial[]>([]);
 
   paisesDisponibles = COUNTRIES;
-  paisSeleccionado = 'AR'; // País por defecto: Argentina
+  paisSeleccionado = 'AR';
   paisActual = signal<Country | undefined>(COUNTRIES.find(p => p.code === 'AR'));
 
   constructor(
     private clienteService: ClienteService,
+    private historialService: HistorialService,
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
@@ -227,18 +270,17 @@ export class ClienteFormComponent implements OnInit {
           email: c.email,
           telefono: c.telefono,
         };
-        // Extraer código de país del teléfono E.164
         if (c.telefono) {
           this.extraerPaisDelTelefono(c.telefono);
         }
       });
+      this.historialService.obtenerPorEntidad('cliente', this.id).subscribe(data => this.historial.set(data));
     }
   }
 
   onPaisChange() {
     const pais = COUNTRIES.find(p => p.code === this.paisSeleccionado);
     this.paisActual.set(pais);
-    // Limpiar error cuando cambia país
     this.telefonoError.set('');
   }
 
@@ -248,12 +290,10 @@ export class ClienteFormComponent implements OnInit {
       if (parsed && parsed.country) {
         this.paisSeleccionado = parsed.country;
         this.onPaisChange();
-        // Extraer solo el número sin el +34 o similar
         const numeroSinPais = telefonoE164.replace(/^\+\d{1,3}/, '');
         this.cliente.telefono = numeroSinPais;
       }
     } catch (e) {
-      // Si no se puede parsear, mantener como está
     }
   }
 
@@ -305,6 +345,17 @@ export class ClienteFormComponent implements OnInit {
   esEmailValido(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
+  }
+
+  formatearFecha(fecha: string): string {
+    return new Date(fecha).toLocaleString('es-AR');
+  }
+
+  claseAccion(accion: string): string {
+    if (accion === 'crear') return 'accion-crear';
+    if (accion === 'editar') return 'accion-editar';
+    if (accion === 'darBaja') return 'accion-darBaja';
+    return '';
   }
 
   guardar() {

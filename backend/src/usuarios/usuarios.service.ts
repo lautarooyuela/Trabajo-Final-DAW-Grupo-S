@@ -4,12 +4,14 @@ import { Repository } from 'typeorm';
 import { Usuario, EstadoUsuario, RolUsuario } from './usuarios.entity';
 import { CrearUsuarioDto, EditarUsuarioDto } from './dtos/usuarios.dto';
 import * as bcrypt from 'bcrypt';
+import { HistorialService } from '../historial/historial.service';
 
 @Injectable()
 export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private usuarioRepo: Repository<Usuario>,
+    private historialService: HistorialService,
   ) {}
 
   private sinClave(usuario: Usuario) {
@@ -21,7 +23,7 @@ export class UsuariosService {
     return usuarios.map((usuario) => this.sinClave(usuario));
   }
 
-  async crear(dto: CrearUsuarioDto) {
+  async crear(dto: CrearUsuarioDto, usuarioNombre: string) {
     const existe = await this.usuarioRepo.findOne({
       where: { nombreUsuario: dto.nombreUsuario },
     });
@@ -42,6 +44,7 @@ export class UsuariosService {
       estado: EstadoUsuario.ACTIVO,
     });
     const guardado = await this.usuarioRepo.save(nuevo);
+    await this.historialService.registrar('usuario', guardado.id, usuarioNombre, 'crear', `Se creó el usuario "${guardado.nombreUsuario}"`);
     return this.sinClave(guardado);
   }
 
@@ -71,7 +74,7 @@ export class UsuariosService {
     });
   }
 
-  async editar(id: number, dto: EditarUsuarioDto) {
+  async editar(id: number, dto: EditarUsuarioDto, usuarioNombre: string) {
     const existe = await this.usuarioRepo.findOne({ where: { id } });
     if (!existe) {
       throw new HttpException(
@@ -86,6 +89,7 @@ export class UsuariosService {
     }
 
     await this.usuarioRepo.update({ id }, dto as any);
+    await this.historialService.registrar('usuario', id, usuarioNombre, 'editar', `Se editó el usuario "${existe.nombreUsuario}"`);
     return this.buscarPorId(id);
   }
 

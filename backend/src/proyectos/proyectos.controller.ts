@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Headers,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ProyectosService } from './proyectos.service';
@@ -20,8 +21,8 @@ export class ProyectosController {
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo proyecto' })
-  crear(@Body() dto: CrearProyectoDto) {
-    return this.proyectosService.crear(dto);
+  crear(@Body() dto: CrearProyectoDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.proyectosService.crear(dto, usuarioNombre);
   }
 
   @Get()
@@ -38,16 +39,13 @@ export class ProyectosController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Editar un proyecto existente' })
-  editar(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: EditarProyectoDto,
-  ) {
-    return this.proyectosService.editar(id, dto);
+  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarProyectoDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.proyectosService.editar(id, dto, usuarioNombre);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Dar de baja lógica a un proyecto' })
-  darDeBaja(@Param('id', ParseIntPipe) id: number) {
-    return this.proyectosService.darDeBaja(id);
+  darDeBaja(@Param('id', ParseIntPipe) id: number, @Headers('x-usuario') usuarioNombre: string) {
+    return this.proyectosService.darDeBaja(id, usuarioNombre);
   }
 }

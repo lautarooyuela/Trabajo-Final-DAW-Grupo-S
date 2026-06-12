@@ -1,8 +1,10 @@
 import { Component, signal, OnInit, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Cliente } from '../../models/cliente.model';
+import { Historial } from '../../models/historial.model';
 import { ClienteService } from '../../services/cliente.service';
 import { AuthService } from '../../services/auth.service';
+import { HistorialService } from '../../services/historial.service';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -69,6 +71,9 @@ import { MatIconModule } from '@angular/material/icon';
                   <button class="btn-editar" [routerLink]="['/clientes', c.id, 'editar']" title="Editar">
                     <mat-icon>edit</mat-icon>
                   </button>
+                  <button class="btn-historial" (click)="toggleHistorial(c.id)" title="Historial">
+                    <mat-icon>history</mat-icon>
+                  </button>
                   @if (c.estado !== 'BAJA') {
                     <button class="btn-eliminar" (click)="baja(c.id)" title="Dar de baja">
                       <mat-icon>person_off</mat-icon>
@@ -77,6 +82,41 @@ import { MatIconModule } from '@angular/material/icon';
                 }
               </td>
             </tr>
+            @if (historialVisible() === c.id) {
+              <tr>
+                <td colspan="6" class="historial-cell">
+                  <div class="historial-box">
+                    <h4>Historial de cambios</h4>
+                    @if (historialCliente().length === 0) {
+                      <p class="sin-historial">No hay registros de historial.</p>
+                    } @else {
+                      <table class="historial-table">
+                        <thead>
+                          <tr>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                            <th>Acción</th>
+                            <th>Detalle</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (h of historialCliente(); track h.id) {
+                            <tr>
+                              <td>{{ formatearFecha(h.fecha) }}</td>
+                              <td>{{ h.usuarioNombre }}</td>
+                              <td>
+                                <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                              </td>
+                              <td>{{ h.detalle }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>
@@ -170,7 +210,7 @@ import { MatIconModule } from '@angular/material/icon';
       gap: 8px;
     }
 
-    .btn-editar, .btn-eliminar {
+    .btn-editar, .btn-eliminar, .btn-historial {
       width: 36px;
       height: 36px;
       padding: 0 !important;
@@ -192,18 +232,49 @@ import { MatIconModule } from '@angular/material/icon';
       border-color: rgba(239, 68, 68, 0.2) !important;
     }
 
+    .btn-historial {
+      color: var(--text-secondary) !important;
+      background: transparent !important;
+      border: 1px solid var(--border-color) !important;
+    }
+
+    .btn-historial:hover {
+      color: var(--primary-color) !important;
+      background: rgba(59, 130, 246, 0.1) !important;
+      border-color: rgba(59, 130, 246, 0.2) !important;
+    }
+
+    .badge-activo { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 4px 12px; border-radius: 9999px; font-size: 0.85em; font-weight: 600; }
+    .badge-baja { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 12px; border-radius: 9999px; font-size: 0.85em; font-weight: 600; }
+
     mat-icon {
       margin: 0 !important;
       font-size: 20px;
       width: 20px;
       height: 20px;
     }
+
+    .historial-cell { background-color: rgba(15, 23, 42, 0.5); }
+    .historial-box { padding: 12px; }
+    .historial-box h4 { margin: 0 0 10px 0; color: var(--text-primary); }
+
+    .historial-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    .historial-table th { color: var(--text-secondary); padding: 8px; text-align: left; }
+    .historial-table td { padding: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+
+    .sin-historial { color: var(--text-secondary); font-style: italic; }
+
+    .accion-crear { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-editar { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-darBaja { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
   `]
 })
 export class ClienteListComponent implements OnInit {
   clientes = signal<Cliente[]>([]);
   sortField = signal<string>('id');
   sortAsc = signal<boolean>(true);
+  historialVisible = signal<number | null>(null);
+  historialCliente = signal<Historial[]>([]);
 
   clientesOrdenados = computed(() => {
     const data = [...this.clientes()];
@@ -228,7 +299,12 @@ export class ClienteListComponent implements OnInit {
     });
   });
 
-  constructor(private clienteService: ClienteService, private router: Router, public authService: AuthService) {}
+  constructor(
+    private clienteService: ClienteService,
+    private historialService: HistorialService,
+    private router: Router,
+    public authService: AuthService
+  ) {}
 
   ngOnInit() { this.cargar(); }
 
@@ -245,6 +321,16 @@ export class ClienteListComponent implements OnInit {
     }
   }
 
+  toggleHistorial(clienteId: number) {
+    if (this.historialVisible() === clienteId) {
+      this.historialVisible.set(null);
+      this.historialCliente.set([]);
+    } else {
+      this.historialVisible.set(clienteId);
+      this.historialService.obtenerPorEntidad('cliente', clienteId).subscribe(data => this.historialCliente.set(data));
+    }
+  }
+
   baja(id: number) {
     if (!this.authService.puedeGestionarClientes()) {
       return;
@@ -253,6 +339,17 @@ export class ClienteListComponent implements OnInit {
     if (confirm('¿Dar de baja este cliente?')) {
       this.clienteService.darDeBaja(id).subscribe(() => this.cargar());
     }
+  }
+
+  formatearFecha(fecha: string): string {
+    return new Date(fecha).toLocaleString('es-AR');
+  }
+
+  claseAccion(accion: string): string {
+    if (accion === 'crear') return 'accion-crear';
+    if (accion === 'editar') return 'accion-editar';
+    if (accion === 'darBaja') return 'accion-darBaja';
+    return '';
   }
 
   exportarCSV() {

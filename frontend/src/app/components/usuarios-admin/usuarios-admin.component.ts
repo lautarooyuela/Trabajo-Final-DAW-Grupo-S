@@ -1,7 +1,9 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../models/usuario.model';
+import { Historial } from '../../models/historial.model';
 import { UsuarioService } from '../../services/usuario.service';
+import { HistorialService } from '../../services/historial.service';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -39,6 +41,7 @@ import { MatIconModule } from '@angular/material/icon';
                 <th (click)="ordenar('estado')" class="sortable">
                   Estado {{ sortField() === 'estado' ? (sortAsc() ? '▲' : '▼') : '' }}
                 </th>
+                <th>Historial</th>
               </tr>
             </thead>
             <tbody>
@@ -65,7 +68,47 @@ import { MatIconModule } from '@angular/material/icon';
                       <option value="BAJA">Baja</option>
                     </select>
                   </td>
+                  <td>
+                    <button class="btn-historial" (click)="toggleHistorial(usuario.id)">
+                      <mat-icon>history</mat-icon>
+                    </button>
+                  </td>
                 </tr>
+                @if (historialVisible() === usuario.id) {
+                  <tr>
+                    <td colspan="4" class="historial-cell">
+                      <div class="historial-box">
+                        <h4>Historial de cambios</h4>
+                        @if (historialUsuario().length === 0) {
+                          <p class="sin-historial">No hay registros de historial.</p>
+                        } @else {
+                          <table class="historial-table">
+                            <thead>
+                              <tr>
+                                <th>Fecha</th>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Detalle</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (h of historialUsuario(); track h.id) {
+                                <tr>
+                                  <td>{{ formatearFecha(h.fecha) }}</td>
+                                  <td>{{ h.usuarioNombre }}</td>
+                                  <td>
+                                    <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                                  </td>
+                                  <td>{{ h.detalle }}</td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
               }
             </tbody>
           </table>
@@ -195,12 +238,49 @@ import { MatIconModule } from '@angular/material/icon';
 
     .sortable { cursor: pointer; user-select: none; }
     .sortable:hover { color: var(--text-primary) !important; }
+
+    .btn-historial {
+      width: 36px;
+      height: 36px;
+      padding: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px !important;
+      background: transparent !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-secondary) !important;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-historial:hover {
+      color: var(--primary-color) !important;
+      background: rgba(59, 130, 246, 0.1) !important;
+      border-color: rgba(59, 130, 246, 0.2) !important;
+    }
+
+    .historial-cell { background-color: rgba(15, 23, 42, 0.5); }
+    .historial-box { padding: 12px; }
+    .historial-box h4 { margin: 0 0 10px 0; color: var(--text-primary); }
+
+    .historial-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    .historial-table th { color: var(--text-secondary); padding: 8px; text-align: left; }
+    .historial-table td { padding: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+
+    .sin-historial { color: var(--text-secondary); font-style: italic; }
+
+    .accion-crear { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-editar { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-darBaja { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
   `]
 })
 export class UsuariosAdminComponent implements OnInit {
   usuarios = signal<Usuario[]>([]);
   sortField = signal<string>('nombreUsuario');
   sortAsc = signal<boolean>(true);
+  historialVisible = signal<number | null>(null);
+  historialUsuario = signal<Historial[]>([]);
 
   usuariosOrdenados = computed(() => {
     const data = [...this.usuarios()];
@@ -227,6 +307,7 @@ export class UsuariosAdminComponent implements OnInit {
 
   constructor(
     private usuarioService: UsuarioService,
+    private historialService: HistorialService,
   ) {}
 
   ngOnInit() {
@@ -246,6 +327,16 @@ export class UsuariosAdminComponent implements OnInit {
     }
   }
 
+  toggleHistorial(usuarioId: number) {
+    if (this.historialVisible() === usuarioId) {
+      this.historialVisible.set(null);
+      this.historialUsuario.set([]);
+    } else {
+      this.historialVisible.set(usuarioId);
+      this.historialService.obtenerPorEntidad('usuario', usuarioId).subscribe(data => this.historialUsuario.set(data));
+    }
+  }
+
   cambiarRol(usuario: Usuario, event: Event) {
     const select = event.target as HTMLSelectElement;
     this.usuarioService.actualizar(usuario.id, { rol: select.value as Usuario['rol'] }).subscribe(() => this.cargar());
@@ -254,5 +345,16 @@ export class UsuariosAdminComponent implements OnInit {
   cambiarEstado(usuario: Usuario, event: Event) {
     const select = event.target as HTMLSelectElement;
     this.usuarioService.actualizar(usuario.id, { estado: select.value }).subscribe(() => this.cargar());
+  }
+
+  formatearFecha(fecha: string): string {
+    return new Date(fecha).toLocaleString('es-AR');
+  }
+
+  claseAccion(accion: string): string {
+    if (accion === 'crear') return 'accion-crear';
+    if (accion === 'editar') return 'accion-editar';
+    if (accion === 'darBaja') return 'accion-darBaja';
+    return '';
   }
 }

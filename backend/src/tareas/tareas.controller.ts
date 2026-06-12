@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Headers,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TareasService } from './tareas.service';
@@ -20,8 +21,8 @@ export class TareasController {
 
   @Post()
   @ApiOperation({ summary: 'Crear una nueva tarea' })
-  crear(@Body() dto: CrearTareaDto) {
-    return this.tareasService.crear(dto);
+  crear(@Body() dto: CrearTareaDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.tareasService.crear(dto, usuarioNombre);
   }
 
   @Get('proyecto/:proyectoId')
@@ -38,13 +39,13 @@ export class TareasController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Editar una tarea existente' })
-  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarTareaDto) {
-    return this.tareasService.editar(id, dto);
+  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarTareaDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.tareasService.editar(id, dto, usuarioNombre);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Eliminar una tarea' })
-  eliminar(@Param('id', ParseIntPipe) id: number) {
-    return this.tareasService.darDeBaja(id);
+  @ApiOperation({ summary: 'Dar de baja lógica a una tarea' })
+  darDeBaja(@Param('id', ParseIntPipe) id: number, @Headers('x-usuario') usuarioNombre: string) {
+    return this.tareasService.darDeBaja(id, usuarioNombre);
   }
 }

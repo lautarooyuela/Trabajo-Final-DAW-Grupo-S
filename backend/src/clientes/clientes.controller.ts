@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Headers,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ClientesService } from './clientes.service';
@@ -20,8 +21,8 @@ export class ClientesController {
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo cliente' })
-  crear(@Body() dto: CrearClienteDto) {
-    return this.clientesService.crear(dto);
+  crear(@Body() dto: CrearClienteDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.clientesService.crear(dto, usuarioNombre);
   }
 
   @Get()
@@ -44,13 +45,13 @@ export class ClientesController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Editar un cliente existente' })
-  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarClienteDto) {
-    return this.clientesService.editar(id, dto);
+  editar(@Param('id', ParseIntPipe) id: number, @Body() dto: EditarClienteDto, @Headers('x-usuario') usuarioNombre: string) {
+    return this.clientesService.editar(id, dto, usuarioNombre);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Dar de baja lógica a un cliente' })
-  darDeBaja(@Param('id', ParseIntPipe) id: number) {
-    return this.clientesService.darDeBaja(id);
+  darDeBaja(@Param('id', ParseIntPipe) id: number, @Headers('x-usuario') usuarioNombre: string) {
+    return this.clientesService.darDeBaja(id, usuarioNombre);
   }
 }

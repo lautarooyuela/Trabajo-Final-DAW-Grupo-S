@@ -3,10 +3,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Proyecto } from '../../models/proyecto.model';
 import { Tarea } from '../../models/tarea.model';
+import { Historial } from '../../models/historial.model';
 import { ProyectoService } from '../../services/proyecto.service';
 import { TareaService } from '../../services/tarea.service';
 import { AuthService } from '../../services/auth.service';
+import { HistorialService } from '../../services/historial.service';
 import { MatIconModule } from '@angular/material/icon';
+import { forkJoin, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-proyecto-detail',
@@ -96,25 +99,25 @@ import { MatIconModule } from '@angular/material/icon';
                       }
                     </td>
                   <td class="actions-cell">
-                      @if (authService.puedeEditar() && editandoTareaId === t.id) {
-                        <button type="button" class="btn-small btn-guardar" (click)="guardarEdicion(t.id)">
-                          <mat-icon>check</mat-icon>
+                    @if (authService.puedeEditar() && editandoTareaId === t.id) {
+                      <button type="button" class="btn-small btn-guardar" (click)="guardarEdicion(t.id)">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                      <button type="button" class="btn-small btn-cancelar" (click)="cancelarEdicion()">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    } @else if (authService.puedeEditar()) {
+                      <button type="button" class="btn-small btn-editar" (click)="iniciarEdicion(t)">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      @if (authService.puedeEliminar()) {
+                        <button class="btn-small btn-eliminar" type="button" (click)="darDeBajaTarea(t.id)">
+                          <mat-icon>delete</mat-icon>
                         </button>
-                        <button type="button" class="btn-small btn-cancelar" (click)="cancelarEdicion()">
-                          <mat-icon>close</mat-icon>
-                        </button>
-                      } @else if (authService.puedeEditar()) {
-                        <button type="button" class="btn-small btn-editar" (click)="iniciarEdicion(t)">
-                          <mat-icon>edit</mat-icon>
-                        </button>
-                        @if (authService.puedeEliminar()) {
-                          <button class="btn-small btn-eliminar" type="button" (click)="eliminarTarea(t.id)">
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        }
-                      } @else {
-                        <span class="empty-actions">-</span>
                       }
+                    } @else {
+                      <span class="empty-actions">-</span>
+                    }
                   </td>
                 </tr>
               }
@@ -129,6 +132,44 @@ import { MatIconModule } from '@angular/material/icon';
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div class="historial-section card">
+        <div class="section-title">
+          <h3>Historial de cambios</h3>
+        </div>
+        @if (historialProyecto().length === 0) {
+          <p class="sin-historial">No hay registros de historial.</p>
+        } @else {
+          <table class="historial-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Entidad</th>
+                <th>Usuario</th>
+                <th>Acción</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (h of historialProyecto(); track h.id) {
+                <tr>
+                  <td>{{ formatearFecha(h.fecha) }}</td>
+                  <td>
+                    <span [class]="h.entidad === 'tarea' ? 'badge-tarea' : 'badge-proyecto'">
+                      {{ h.entidad === 'tarea' ? 'Tarea' : 'Proyecto' }}
+                    </span>
+                  </td>
+                  <td>{{ h.usuarioNombre }}</td>
+                  <td>
+                    <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                  </td>
+                  <td>{{ h.detalle }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
       </div>
     </div>
   `,
@@ -307,11 +348,39 @@ import { MatIconModule } from '@angular/material/icon';
       margin-bottom: 16px;
       opacity: 0.3;
     }
+
+    .sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .sortable:hover {
+      color: var(--text-primary) !important;
+    }
+
+    .historial-section {
+      margin-top: 0;
+    }
+
+    .historial-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+    .historial-table th { color: var(--text-secondary); padding: 8px; text-align: left; }
+    .historial-table td { padding: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+
+    .sin-historial { color: var(--text-secondary); font-style: italic; }
+
+    .accion-crear { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-editar { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+    .accion-darBaja { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+
+    .badge-tarea { background-color: rgba(168, 85, 247, 0.15); color: #a855f7; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: 600; }
+    .badge-proyecto { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: 600; }
   `]
 })
 export class ProyectoDetailComponent implements OnInit {
   proyecto = signal<Proyecto | null>(null);
   tareas = signal<Tarea[]>([]);
+  historialProyecto = signal<Historial[]>([]);
   nuevaTarea: Partial<Tarea> = { descripcion: '' };
   editandoTareaId: number | null = null;
   tareaEdit: Partial<Tarea> = {};
@@ -345,6 +414,7 @@ export class ProyectoDetailComponent implements OnInit {
     private proyectoService: ProyectoService,
     private tareaService: TareaService,
     public authService: AuthService,
+    private historialService: HistorialService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -353,6 +423,7 @@ export class ProyectoDetailComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.cargarProyecto(id);
     this.cargarTareas(id);
+    this.cargarHistorial(id);
   }
 
   cargarProyecto(id: number) {
@@ -361,6 +432,22 @@ export class ProyectoDetailComponent implements OnInit {
 
   cargarTareas(proyectoId: number) {
     this.tareaService.obtenerPorProyecto(proyectoId).subscribe(data => this.tareas.set(data));
+  }
+
+  cargarHistorial(proyectoId: number) {
+    forkJoin({
+      proyectoHist: this.historialService.obtenerPorEntidad('proyecto', proyectoId),
+      tareasHist: this.tareaService.obtenerPorProyecto(proyectoId).pipe(
+        switchMap(tareas => {
+          if (tareas.length === 0) return of([]);
+          return forkJoin(tareas.map(t => this.historialService.obtenerPorEntidad('tarea', t.id)));
+        })
+      )
+    }).subscribe(({ proyectoHist, tareasHist }) => {
+      const todoHistorial = [...proyectoHist, ...tareasHist.flat()];
+      todoHistorial.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+      this.historialProyecto.set(todoHistorial);
+    });
   }
 
   ordenar(campo: string) {
@@ -385,6 +472,7 @@ export class ProyectoDetailComponent implements OnInit {
     this.tareaService.crear({ ...this.nuevaTarea, proyectoId } as any).subscribe(() => {
       this.nuevaTarea = { descripcion: '' };
       this.cargarTareas(proyectoId);
+      this.cargarHistorial(proyectoId);
     });
   }
 
@@ -407,6 +495,7 @@ export class ProyectoDetailComponent implements OnInit {
       this.cancelarEdicion();
       const proyectoId = Number(this.route.snapshot.paramMap.get('id'));
       this.cargarTareas(proyectoId);
+      this.cargarHistorial(proyectoId);
     });
   }
 
@@ -419,20 +508,33 @@ export class ProyectoDetailComponent implements OnInit {
     this.tareaService.actualizar(id, { estado: select.value as any }).subscribe(() => {
       const proyectoId = Number(this.route.snapshot.paramMap.get('id'));
       this.cargarTareas(proyectoId);
+      this.cargarHistorial(proyectoId);
     });
   }
 
-  eliminarTarea(id: number) {
+  darDeBajaTarea(id: number) {
     if (!this.authService.puedeEliminar()) {
       return;
     }
 
-    if (confirm('¿Estás seguro de que deseas eliminar esta tarea permanentemente?')) {
+    if (confirm('¿Estás seguro de que deseas dar de baja esta tarea?')) {
       this.tareaService.eliminar(id).subscribe(() => {
         const proyectoId = Number(this.route.snapshot.paramMap.get('id'));
         this.cargarTareas(proyectoId);
+        this.cargarHistorial(proyectoId);
       });
     }
+  }
+
+  formatearFecha(fecha: string): string {
+    return new Date(fecha).toLocaleString('es-AR');
+  }
+
+  claseAccion(accion: string): string {
+    if (accion === 'crear') return 'accion-crear';
+    if (accion === 'editar') return 'accion-editar';
+    if (accion === 'darBaja') return 'accion-darBaja';
+    return '';
   }
 
   volver() {
