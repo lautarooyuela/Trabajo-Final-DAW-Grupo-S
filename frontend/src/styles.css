@@ -1,0 +1,206 @@
+/* Global Styles - Dark Mode Slate/Navy inspired by reference image */
+
+:root {
+  /* Dark Theme Palette */
+  --bg-main: #0f172a;        /* Deep Navy Background */
+  --bg-card: #1e293b;        /* Lighter Navy for cards/containers */
+  --bg-sidebar: #0f172a;     /* Sidebar same as main or slightly different */
+  
+  --text-primary: #f8fafc;   /* Almost white */
+  --text-secondary: #94a3b8; /* Muted slate */
+  
+  --primary-color: #3b82f6;  /* Bright Blue accent */
+  --success-color: #10b981;  /* Emerald Green */
+  --warning-color: #f59e0b;  /* Amber Orange */
+  --danger-color: #ef4444;   /* Red */
+  
+  --border-color: #334155;   /* Slate 700 */
+  
+  /* Material 3 System Variable Overrides */
+  --mat-sys-primary: var(--primary-color);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #1d4ed8;
+  --mat-sys-on-primary-container: #dbeafe;
+  
+  --mat-sys-surface: var(--bg-main);
+  --mat-sys-on-surface: var(--text-primary);
+  --mat-sys-surface-container: var(--bg-card);
+  --mat-sys-on-surface-variant: var(--text-secondary);
+  
+  --mat-sys-outline: var(--border-color);
+  --mat-sys-outline-variant: #1e293b;
+}
+
+body {
+  background-color: var(--bg-main) !important;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Scrollbar styling for dark mode */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Buttons */
+.success-btn {
+  background-color: var(--success-color) !important;
+  color: white !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+.success-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.export-btn {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.export-btn:hover {
+  filter: brightness(1.1);
+}
+
+.btn-editar, .btn-ver, .btn-tareas, .btn-secondary {
+  background-color: #334155 !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-right: 8px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-editar:hover, .btn-ver:hover, .btn-tareas:hover {
+  background-color: #475569 !important;
+  border-color: var(--text-secondary) !important;
+}
+
+/* Badges */
+.badge-activo {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  color: #34d399 !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  font-size: 0.75em !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+.badge-baja {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #f87171 !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  font-size: 0.75em !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+.badge-tareas {
+  background-color: #1e293b !important;
+  color: var(--primary-color) !important;
+  padding: 4px 12px !important;
+  border-radius: 8px !important;
+  font-size: 0.8em !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 24px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  border: 1px solid var(--border-color);
+}
+
+th {
+  background-color: #1e293b !important;
+  color: var(--text-secondary) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  letter-spacing: 0.1em;
+  padding: 18px 20px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  text-align: left;
+}
+
+td {
+  padding: 18px 20px !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text-primary);
+  font-size: 0.95em;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background-color: #2d3748 !important;
+}
+
+/* Form Elements */
+input, select {
+  background-color: #0f172a !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  color: var(--text-primary) !important;
+  font-size: 0.95em;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Typography */
+h2 {
+  color: var(--text-primary);
+  font-weight: 800;
+  font-size: 1.8em;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
