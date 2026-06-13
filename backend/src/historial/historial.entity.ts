@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'historial' })
 export class Historial {
@@ -13,6 +18,9 @@ export class Historial {
 
   @Column({ nullable: false })
   usuarioNombre: string;
+
+  @Column({ nullable: true })
+  usuarioId: number;
 
   @Column({ nullable: false })
   accion: string;

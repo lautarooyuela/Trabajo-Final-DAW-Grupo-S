@@ -3,6 +3,7 @@ export interface Historial {
   entidad: string;
   entidadId: number;
   usuarioNombre: string;
+  usuarioId?: number;
   accion: string;
   detalle: string;
   fecha: string;

@@ -16,8 +16,8 @@ export class ProyectosService {
     private historialService: HistorialService,
   ) {}
 
-  async crear(dto: CrearProyectoDto, usuarioNombre: string) {
-    const nuevo = this.proyectoRepo.create(dto as any) as unknown as Proyecto;
+  async crear(dto: CrearProyectoDto, usuarioNombre: string, usuarioId: number) {
+    const nuevo = this.proyectoRepo.create(dto as unknown as Proyecto);
     if (dto.clienteId) {
       const cliente = await this.clienteRepo.findOne({
         where: { id: dto.clienteId },
@@ -34,7 +34,14 @@ export class ProyectosService {
       nuevo.cliente = cliente;
     }
     const guardado = await this.proyectoRepo.save(nuevo);
-    await this.historialService.registrar('proyecto', guardado.id, usuarioNombre, 'crear', `Se creó el proyecto "${guardado.nombre}"`);
+    await this.historialService.registrar(
+      'proyecto',
+      guardado.id,
+      usuarioNombre,
+      usuarioId,
+      'crear',
+      `Se creó el proyecto "${guardado.nombre}"`,
+    );
     return guardado;
   }
 
@@ -58,16 +65,24 @@ export class ProyectosService {
     return p;
   }
 
-  async editar(id: number, dto: EditarProyectoDto, usuarioNombre: string) {
+  async editar(
+    id: number,
+    dto: EditarProyectoDto,
+    usuarioNombre: string,
+    usuarioId: number,
+  ) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      const updateData: any = { ...dto };
-      if (dto.clienteId !== undefined) {
-        if (dto.clienteId === null) {
-          updateData.cliente = null;
+      const { clienteId, ...campos } = dto;
+      if (clienteId !== undefined) {
+        if (clienteId === null) {
+          await this.proyectoRepo.update({ id }, {
+            ...campos,
+            cliente: null,
+          } as Partial<Proyecto>);
         } else {
           const cliente = await this.clienteRepo.findOne({
-            where: { id: dto.clienteId },
+            where: { id: clienteId },
           });
           if (!cliente) {
             throw new HttpException(
@@ -81,21 +96,38 @@ export class ProyectosService {
               HttpStatus.BAD_REQUEST,
             );
           }
-          updateData.cliente = cliente;
+          await this.proyectoRepo.update({ id }, {
+            ...campos,
+            cliente,
+          } as Partial<Proyecto>);
         }
-        delete updateData.clienteId;
+      } else {
+        await this.proyectoRepo.update({ id }, campos as Partial<Proyecto>);
       }
-      await this.proyectoRepo.update({ id }, updateData);
-      await this.historialService.registrar('proyecto', id, usuarioNombre, 'editar', `Se editó el proyecto "${existe.nombre}"`);
+      await this.historialService.registrar(
+        'proyecto',
+        id,
+        usuarioNombre,
+        usuarioId,
+        'editar',
+        `Se editó el proyecto "${existe.nombre}"`,
+      );
       return this.buscarPorId(id);
     }
   }
 
-  async darDeBaja(id: number, usuarioNombre: string) {
+  async darDeBaja(id: number, usuarioNombre: string, usuarioId: number) {
     const existe = await this.buscarPorId(id);
     if (existe) {
       await this.proyectoRepo.update({ id }, { estado: EstadoProyecto.BAJA });
-      await this.historialService.registrar('proyecto', id, usuarioNombre, 'darBaja', `Se dio de baja el proyecto "${existe.nombre}"`);
+      await this.historialService.registrar(
+        'proyecto',
+        id,
+        usuarioNombre,
+        usuarioId,
+        'darBaja',
+        `Se dio de baja el proyecto "${existe.nombre}"`,
+      );
       return this.buscarPorId(id);
     }
   }

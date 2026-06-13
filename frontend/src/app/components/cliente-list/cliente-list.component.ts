@@ -51,7 +51,9 @@ import { MatIconModule } from '@angular/material/icon';
             <th (click)="ordenar('estado')" class="sortable">
               Estado {{ sortField() === 'estado' ? (sortAsc() ? '▲' : '▼') : '' }}
             </th>
-            <th>Acciones</th>
+            @if (authService.puedeGestionarClientes()) {
+              <th>Acciones</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -66,8 +68,8 @@ import { MatIconModule } from '@angular/material/icon';
                   {{ c.estado }}
                 </span>
               </td>
-              <td class="actions-cell">
-                @if (authService.puedeGestionarClientes()) {
+              @if (authService.puedeGestionarClientes()) {
+                <td class="actions-cell">
                   <button class="btn-editar" [routerLink]="['/clientes', c.id, 'editar']" title="Editar">
                     <mat-icon>edit</mat-icon>
                   </button>
@@ -79,8 +81,8 @@ import { MatIconModule } from '@angular/material/icon';
                       <mat-icon>person_off</mat-icon>
                     </button>
                   }
-                }
-              </td>
+                </td>
+              }
             </tr>
             @if (historialVisible() === c.id) {
               <tr>
@@ -105,7 +107,7 @@ import { MatIconModule } from '@angular/material/icon';
                               <td>{{ formatearFecha(h.fecha) }}</td>
                               <td>{{ h.usuarioNombre }}</td>
                               <td>
-                                <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                                <span [class]="claseAccion(h.accion)">{{ {crear: 'Crear', editar: 'Editar', darBaja: 'Dar de baja'}[h.accion] || h.accion }}</span>
                               </td>
                               <td>{{ h.detalle }}</td>
                             </tr>

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cliente, EstadoCliente } from './clientes.entity';
 import { CrearClienteDto, EditarClienteDto } from './dtos/clientes.dto';
-import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
+import { parsePhoneNumber } from 'libphonenumber-js';
 import { HistorialService } from '../historial/historial.service';
 
 @Injectable()
@@ -16,19 +16,20 @@ export class ClientesService {
 
   private normalizarTelefono(telefono: string): string {
     if (!telefono) return telefono;
-    
+
     try {
       const parsed = parsePhoneNumber(telefono);
       if (parsed && parsed.isValid()) {
         return parsed.format('E.164');
       }
-    } catch (e) {
+    } catch {
+      /* ignora */
     }
-    
+
     return telefono;
   }
 
-  async crear(dto: CrearClienteDto, usuarioNombre: string) {
+  async crear(dto: CrearClienteDto, usuarioNombre: string, usuarioId: number) {
     const clienteNormalizado: Partial<Cliente> = {
       ...dto,
       telefono: this.normalizarTelefono(dto.telefono),
@@ -37,7 +38,14 @@ export class ClientesService {
         : EstadoCliente.ACTIVO,
     };
     const guardado = await this.clienteRepo.save(clienteNormalizado as Cliente);
-    await this.historialService.registrar('cliente', guardado.id, usuarioNombre, 'crear', `Se creó el cliente "${guardado.nombre}"`);
+    await this.historialService.registrar(
+      'cliente',
+      guardado.id,
+      usuarioNombre,
+      usuarioId,
+      'crear',
+      `Se creó el cliente "${guardado.nombre}"`,
+    );
     return guardado;
   }
 
@@ -63,23 +71,35 @@ export class ClientesService {
     return this.clienteRepo.find({ where: { estado: EstadoCliente.ACTIVO } });
   }
 
-  async editar(id: number, dto: EditarClienteDto, usuarioNombre: string) {
+  async editar(
+    id: number,
+    dto: EditarClienteDto,
+    usuarioNombre: string,
+    usuarioId: number,
+  ) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      const dtoNormalizado: any = { ...dto };
+      const dtoNormalizado: Record<string, unknown> = { ...dto };
       if (dto.estado) {
-        dtoNormalizado.estado = dto.estado as unknown as EstadoCliente;
+        dtoNormalizado.estado = dto.estado;
       }
       if (dto.telefono) {
         dtoNormalizado.telefono = this.normalizarTelefono(dto.telefono);
       }
       await this.clienteRepo.update({ id }, dtoNormalizado);
-      await this.historialService.registrar('cliente', id, usuarioNombre, 'editar', `Se editó el cliente "${existe.nombre}"`);
+      await this.historialService.registrar(
+        'cliente',
+        id,
+        usuarioNombre,
+        usuarioId,
+        'editar',
+        `Se editó el cliente "${existe.nombre}"`,
+      );
       return this.buscarPorId(id);
     }
   }
 
-  async darDeBaja(id: number, usuarioNombre: string) {
+  async darDeBaja(id: number, usuarioNombre: string, usuarioId: number) {
     const cliente = await this.buscarPorId(id);
     const tieneProyectos =
       cliente.proyectos &&
@@ -91,7 +111,14 @@ export class ClientesService {
       );
     }
     await this.clienteRepo.update({ id }, { estado: EstadoCliente.BAJA });
-    await this.historialService.registrar('cliente', id, usuarioNombre, 'darBaja', `Se dio de baja el cliente "${cliente.nombre}"`);
+    await this.historialService.registrar(
+      'cliente',
+      id,
+      usuarioNombre,
+      usuarioId,
+      'darBaja',
+      `Se dio de baja el cliente "${cliente.nombre}"`,
+    );
     return this.buscarPorId(id);
   }
 }

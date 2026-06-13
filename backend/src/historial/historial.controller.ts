@@ -5,6 +5,11 @@ import { HistorialService } from './historial.service';
 export class HistorialController {
   constructor(private historialService: HistorialService) {}
 
+  @Get('usuario/:usuarioId')
+  buscarPorUsuario(@Param('usuarioId', ParseIntPipe) usuarioId: number) {
+    return this.historialService.buscarPorUsuario(usuarioId);
+  }
+
   @Get(':entidad/:entidadId')
   buscarPorEntidad(
     @Param('entidad') entidad: string,

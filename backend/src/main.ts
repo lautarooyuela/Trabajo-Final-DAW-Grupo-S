@@ -24,7 +24,9 @@ async function bootstrap() {
   if (process.env.SWAGGER_HABILITADO === 'true') {
     const config = new DocumentBuilder()
       .setTitle('Sistema de Gestión de Proyectos')
-      .setDescription('Descripción de la API del sistema de gestión de proyectos')
+      .setDescription(
+        'Descripción de la API del sistema de gestión de proyectos',
+      )
       .setVersion('1.0')
       .addBearerAuth() // Habilita la autenticación por token JWT en la UI
       .build();
@@ -37,4 +39,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();

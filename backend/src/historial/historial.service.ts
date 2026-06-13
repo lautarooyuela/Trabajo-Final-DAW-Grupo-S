@@ -14,6 +14,7 @@ export class HistorialService {
     entidad: string,
     entidadId: number,
     usuarioNombre: string,
+    usuarioId: number,
     accion: string,
     detalle?: string,
   ) {
@@ -21,6 +22,7 @@ export class HistorialService {
       entidad,
       entidadId,
       usuarioNombre,
+      usuarioId,
       accion,
       detalle: detalle || '',
     });
@@ -37,6 +39,13 @@ export class HistorialService {
   async buscarPorEntidadGeneral(entidad: string) {
     return this.historialRepo.find({
       where: { entidad },
+      order: { fecha: 'DESC' },
+    });
+  }
+
+  async buscarPorUsuario(usuarioId: number) {
+    return this.historialRepo.find({
+      where: { usuarioId },
       order: { fecha: 'DESC' },
     });
   }

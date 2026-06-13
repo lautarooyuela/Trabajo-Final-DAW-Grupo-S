@@ -78,7 +78,7 @@ import { MatIconModule } from '@angular/material/icon';
                   <tr>
                     <td colspan="4" class="historial-cell">
                       <div class="historial-box">
-                        <h4>Historial de cambios</h4>
+                        <h4>Registro de Actividad</h4>
                         @if (historialUsuario().length === 0) {
                           <p class="sin-historial">No hay registros de historial.</p>
                         } @else {
@@ -86,18 +86,18 @@ import { MatIconModule } from '@angular/material/icon';
                             <thead>
                               <tr>
                                 <th>Fecha</th>
-                                <th>Usuario</th>
+                                <th>Módulo</th>
                                 <th>Acción</th>
                                 <th>Detalle</th>
                               </tr>
                             </thead>
                             <tbody>
                               @for (h of historialUsuario(); track h.id) {
-                                <tr>
-                                  <td>{{ formatearFecha(h.fecha) }}</td>
-                                  <td>{{ h.usuarioNombre }}</td>
-                                  <td>
-                                    <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                                  <tr>
+                                    <td>{{ formatearFecha(h.fecha) }}</td>
+                                    <td style="text-transform: capitalize">{{ h.entidad }}</td>
+                                    <td>
+                                    <span [class]="claseAccion(h.accion)">{{ {crear: 'Crear', editar: 'Editar', darBaja: 'Dar de baja'}[h.accion] || h.accion }}</span>
                                   </td>
                                   <td>{{ h.detalle }}</td>
                                 </tr>
@@ -333,7 +333,7 @@ export class UsuariosAdminComponent implements OnInit {
       this.historialUsuario.set([]);
     } else {
       this.historialVisible.set(usuarioId);
-      this.historialService.obtenerPorEntidad('usuario', usuarioId).subscribe(data => this.historialUsuario.set(data));
+      this.historialService.obtenerPorUsuario(usuarioId).subscribe(data => this.historialUsuario.set(data));
     }
   }
 

@@ -15,7 +15,7 @@ export class UsuariosService {
   ) {}
 
   private sinClave(usuario: Usuario) {
-    const { clave, ...resto } = usuario;
+    const { ...resto } = usuario;
     return resto;
   }
 
@@ -23,7 +23,7 @@ export class UsuariosService {
     return usuarios.map((usuario) => this.sinClave(usuario));
   }
 
-  async crear(dto: CrearUsuarioDto, usuarioNombre: string) {
+  async crear(dto: CrearUsuarioDto, usuarioNombre: string, usuarioId: number) {
     const existe = await this.usuarioRepo.findOne({
       where: { nombreUsuario: dto.nombreUsuario },
     });
@@ -44,7 +44,14 @@ export class UsuariosService {
       estado: EstadoUsuario.ACTIVO,
     });
     const guardado = await this.usuarioRepo.save(nuevo);
-    await this.historialService.registrar('usuario', guardado.id, usuarioNombre, 'crear', `Se creó el usuario "${guardado.nombreUsuario}"`);
+    await this.historialService.registrar(
+      'usuario',
+      guardado.id,
+      usuarioNombre,
+      usuarioId,
+      'crear',
+      `Se creó el usuario "${guardado.nombreUsuario}"`,
+    );
     return this.sinClave(guardado);
   }
 
@@ -74,7 +81,12 @@ export class UsuariosService {
     });
   }
 
-  async editar(id: number, dto: EditarUsuarioDto, usuarioNombre: string) {
+  async editar(
+    id: number,
+    dto: EditarUsuarioDto,
+    usuarioNombre: string,
+    usuarioId: number,
+  ) {
     const existe = await this.usuarioRepo.findOne({ where: { id } });
     if (!existe) {
       throw new HttpException(
@@ -88,8 +100,15 @@ export class UsuariosService {
       dto.clave = await bcrypt.hash(dto.clave, salt);
     }
 
-    await this.usuarioRepo.update({ id }, dto as any);
-    await this.historialService.registrar('usuario', id, usuarioNombre, 'editar', `Se editó el usuario "${existe.nombreUsuario}"`);
+    await this.usuarioRepo.update({ id }, dto);
+    await this.historialService.registrar(
+      'usuario',
+      id,
+      usuarioNombre,
+      usuarioId,
+      'editar',
+      `Se editó el usuario "${existe.nombreUsuario}"`,
+    );
     return this.buscarPorId(id);
   }
 

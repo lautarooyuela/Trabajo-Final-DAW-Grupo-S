@@ -82,7 +82,7 @@ import { MatIconModule } from '@angular/material/icon';
                     <td>{{ formatearFecha(h.fecha) }}</td>
                     <td>{{ h.usuarioNombre }}</td>
                     <td>
-                      <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                      <span [class]="claseAccion(h.accion)">{{ {crear: 'Crear', editar: 'Editar', darBaja: 'Dar de baja'}[h.accion] || h.accion }}</span>
                     </td>
                     <td>{{ h.detalle }}</td>
                   </tr>

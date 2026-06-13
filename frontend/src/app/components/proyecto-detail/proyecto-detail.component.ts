@@ -162,7 +162,7 @@ import { forkJoin, of, switchMap } from 'rxjs';
                   </td>
                   <td>{{ h.usuarioNombre }}</td>
                   <td>
-                    <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                    <span [class]="claseAccion(h.accion)">{{ {crear: 'Crear', editar: 'Editar', darBaja: 'Dar de baja'}[h.accion] || h.accion }}</span>
                   </td>
                   <td>{{ h.detalle }}</td>
                 </tr>

@@ -1,10 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CrearProyectoDto {
-  @ApiProperty({ description: 'Nombre del proyecto', example: 'Web Corporativa' })
+  @ApiProperty({
+    description: 'Nombre del proyecto',
+    example: 'Web Corporativa',
+  })
   nombre: string;
 
-  @ApiPropertyOptional({ description: 'Estado del proyecto', example: 'PLANIFICACION' })
+  @ApiPropertyOptional({
+    description: 'Estado del proyecto',
+    example: 'PLANIFICACION',
+  })
   estado?: string;
 
   @ApiPropertyOptional({ description: 'ID del cliente asociado', example: 1 })
@@ -12,10 +18,16 @@ export class CrearProyectoDto {
 }
 
 export class EditarProyectoDto {
-  @ApiPropertyOptional({ description: 'Nombre del proyecto', example: 'Web Corporativa' })
+  @ApiPropertyOptional({
+    description: 'Nombre del proyecto',
+    example: 'Web Corporativa',
+  })
   nombre?: string;
 
-  @ApiPropertyOptional({ description: 'Estado del proyecto', example: 'EN_PROGRESO' })
+  @ApiPropertyOptional({
+    description: 'Estado del proyecto',
+    example: 'EN_PROGRESO',
+  })
   estado?: string;
 
   @ApiPropertyOptional({ description: 'ID del cliente asociado', example: 1 })

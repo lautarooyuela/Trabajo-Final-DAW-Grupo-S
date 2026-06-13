@@ -21,16 +21,29 @@ import { MatIconModule } from '@angular/material/icon';
           <mat-icon class="header-icon">{{ editando ? 'edit' : 'person_add' }}</mat-icon>
           <h2>{{ editando ? 'Editar' : 'Nuevo' }} Cliente</h2>
         </div>
-        
+
         <form (ngSubmit)="guardar()">
           <div class="field">
             <label>Nombre Completo / Empresa</label>
-            <input type="text" [(ngModel)]="cliente.nombre" name="nombre" placeholder="Ej: Juan Pérez o Tech Solutions" required />
+            <input
+              type="text"
+              [(ngModel)]="cliente.nombre"
+              name="nombre"
+              placeholder="Ej: Juan Pérez o Tech Solutions"
+              required
+            />
           </div>
 
           <div class="field">
             <label>Correo Electrónico</label>
-            <input type="email" [(ngModel)]="cliente.email" (blur)="validarEmail()" name="email" placeholder="cliente@ejemplo.com" required />
+            <input
+              type="email"
+              [(ngModel)]="cliente.email"
+              (blur)="validarEmail()"
+              name="email"
+              placeholder="cliente@ejemplo.com"
+              required
+            />
             @if (emailError()) {
               <p class="error-msg">{{ emailError() }}</p>
             }
@@ -44,34 +57,30 @@ import { MatIconModule } from '@angular/material/icon';
                   <option [value]="pais.code">{{ pais.flag }} +{{ pais.dialCode }}</option>
                 }
               </select>
-              <input 
-                type="tel" 
-                [(ngModel)]="cliente.telefono" 
-                (blur)="validarTelefono()" 
-                name="telefono" 
+              <input
+                type="tel"
+                [(ngModel)]="cliente.telefono"
+                (blur)="validarTelefono()"
+                name="telefono"
                 [placeholder]="paisActual()?.format || '+XX XXX XXX XXXX'"
                 inputmode="numeric"
-                required 
+                required
               />
             </div>
             @if (telefonoError()) {
               <p class="error-msg">{{ telefonoError() }}</p>
             }
           </div>
-          
+
           <div class="actions">
             <button type="submit" class="btn-guardar">
               <mat-icon>save</mat-icon> Guardar Cliente
             </button>
-            <button type="button" class="btn-cancelar" (click)="volver()">
-              Cancelar
-            </button>
+            <button type="button" class="btn-cancelar" (click)="volver()">Cancelar</button>
           </div>
         </form>
         @if (error()) {
-          <div class="alert error-alert">
-            <mat-icon>error</mat-icon> {{ error() }}
-          </div>
+          <div class="alert error-alert"><mat-icon>error</mat-icon> {{ error() }}</div>
         }
 
         @if (editando && historial().length > 0) {
@@ -92,7 +101,10 @@ import { MatIconModule } from '@angular/material/icon';
                     <td>{{ formatearFecha(h.fecha) }}</td>
                     <td>{{ h.usuarioNombre }}</td>
                     <td>
-                      <span [class]="claseAccion(h.accion)">{{ h.accion }}</span>
+                      <span [class]="claseAccion(h.accion)">{{
+                        { crear: 'Crear', editar: 'Editar', darBaja: 'Dar de baja' }[h.accion] ||
+                          h.accion
+                      }}</span>
                     </td>
                     <td>{{ h.detalle }}</td>
                   </tr>
@@ -104,134 +116,209 @@ import { MatIconModule } from '@angular/material/icon';
       </div>
     </div>
   `,
-  styles: [`
-    .form-container { 
-      display: flex; 
-      justify-content: center; 
-      padding: 60px 24px; 
-      background-color: var(--bg-main); 
-      min-height: 100vh; 
-    }
+  styles: [
+    `
+      .form-container {
+        display: flex;
+        justify-content: center;
+        padding: 60px 24px;
+        background-color: var(--bg-main);
+        min-height: 100vh;
+      }
 
-    .card { 
-      background: var(--bg-card); 
-      padding: 48px; 
-      border-radius: 24px; 
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-      width: 100%; 
-      max-width: 540px; 
-      height: fit-content;
-      border: 1px solid var(--border-color);
-    }
+      .card {
+        background: var(--bg-card);
+        padding: 48px;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 540px;
+        height: fit-content;
+        border: 1px solid var(--border-color);
+      }
 
-    .form-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
+      .form-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
 
-    .header-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: var(--primary-color);
-    }
+      .header-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+        color: var(--primary-color);
+      }
 
-    h2 { margin: 0; color: var(--text-primary); font-weight: 800; font-size: 1.8em; }
+      h2 {
+        margin: 0;
+        color: var(--text-primary);
+        font-weight: 800;
+        font-size: 1.8em;
+      }
 
-    .field { margin-bottom: 24px; }
+      .field {
+        margin-bottom: 24px;
+      }
 
-    label { 
-      display: block; 
-      margin-bottom: 10px; 
-      font-weight: 600; 
-      color: var(--text-secondary); 
-      font-size: 0.85em;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.85em;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
 
-    input, select { 
-      width: 100%; 
-      padding: 14px 18px; 
-      background-color: #0f172a !important;
-      border: 1px solid var(--border-color) !important; 
-      border-radius: 12px !important; 
-      box-sizing: border-box; 
-      font-family: inherit;
-      color: var(--text-primary) !important;
-      font-size: 1em;
-      transition: all 0.2s;
-    }
+      input,
+      select {
+        width: 100%;
+        padding: 14px 18px;
+        background-color: #0f172a !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 12px !important;
+        box-sizing: border-box;
+        font-family: inherit;
+        color: var(--text-primary) !important;
+        font-size: 1em;
+        transition: all 0.2s;
+      }
 
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-color) !important;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
-    }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+      }
 
-    .telefono-container { display: flex; gap: 12px; }
-    .telefono-container select { flex: 0 0 40%; }
-    .telefono-container input { flex: 1; }
+      .telefono-container {
+        display: flex;
+        gap: 12px;
+      }
+      .telefono-container select {
+        flex: 0 0 40%;
+      }
+      .telefono-container input {
+        flex: 1;
+      }
 
-    .error-msg { color: var(--danger-color); font-size: 0.85em; margin-top: 8px; font-weight: 600; }
+      .error-msg {
+        color: var(--danger-color);
+        font-size: 0.85em;
+        margin-top: 8px;
+        font-weight: 600;
+      }
 
-    .actions { display: flex; gap: 16px; margin-top: 40px; }
+      .actions {
+        display: flex;
+        gap: 16px;
+        margin-top: 40px;
+      }
 
-    button { 
-      padding: 14px 28px; 
-      border-radius: 12px; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: 700; 
-      transition: all 0.2s;
-      font-size: 1em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
+      button {
+        padding: 14px 28px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s;
+        font-size: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
 
-    .btn-guardar { 
-      background-color: var(--primary-color) !important; 
-      color: white !important; 
-      flex: 2; 
-    }
-    .btn-guardar:hover { filter: brightness(1.1); transform: translateY(-1px); }
+      .btn-guardar {
+        background-color: var(--primary-color) !important;
+        color: white !important;
+        flex: 2;
+      }
+      .btn-guardar:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
 
-    .btn-cancelar { 
-      background-color: transparent !important; 
-      color: var(--text-secondary) !important; 
-      border: 1px solid var(--border-color) !important; 
-      flex: 1; 
-    }
-    .btn-cancelar:hover { background-color: rgba(255, 255, 255, 0.05) !important; color: var(--text-primary) !important; }
+      .btn-cancelar {
+        background-color: transparent !important;
+        color: var(--text-secondary) !important;
+        border: 1px solid var(--border-color) !important;
+        flex: 1;
+      }
+      .btn-cancelar:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: var(--text-primary) !important;
+      }
 
-    .alert {
-      margin-top: 32px;
-      padding: 16px;
-      border-radius: 12px;
-      font-size: 0.95em;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+      .alert {
+        margin-top: 32px;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 0.95em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
-    .error-alert { background-color: rgba(239, 68, 68, 0.1); color: var(--danger-color); border: 1px solid rgba(239, 68, 68, 0.2); }
+      .error-alert {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
 
-    .historial-section { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; }
-    .historial-section h4 { margin: 0 0 10px 0; color: var(--text-primary); }
+      .historial-section {
+        margin-top: 25px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+      }
+      .historial-section h4 {
+        margin: 0 0 10px 0;
+        color: var(--text-primary);
+      }
 
-    .historial-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-    .historial-table th { background-color: #0f172a; color: var(--text-secondary); padding: 8px; text-align: left; }
-    .historial-table td { padding: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+      .historial-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85em;
+      }
+      .historial-table th {
+        background-color: #0f172a;
+        color: var(--text-secondary);
+        padding: 8px;
+        text-align: left;
+      }
+      .historial-table td {
+        padding: 8px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+      }
 
-    .accion-crear { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
-    .accion-editar { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
-    .accion-darBaja { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
-  `]
+      .accion-crear {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.85em;
+      }
+      .accion-editar {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.85em;
+      }
+      .accion-darBaja {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.85em;
+      }
+    `,
+  ],
 })
 export class ClienteFormComponent implements OnInit {
   cliente: Partial<Cliente> = { nombre: '', email: '', telefono: '' };
@@ -244,14 +331,14 @@ export class ClienteFormComponent implements OnInit {
 
   paisesDisponibles = COUNTRIES;
   paisSeleccionado = 'AR';
-  paisActual = signal<Country | undefined>(COUNTRIES.find(p => p.code === 'AR'));
+  paisActual = signal<Country | undefined>(COUNTRIES.find((p) => p.code === 'AR'));
 
   constructor(
     private clienteService: ClienteService,
     private historialService: HistorialService,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnInit() {
@@ -264,7 +351,7 @@ export class ClienteFormComponent implements OnInit {
     if (param) {
       this.editando = true;
       this.id = Number(param);
-      this.clienteService.obtenerPorId(this.id).subscribe(c => {
+      this.clienteService.obtenerPorId(this.id).subscribe((c) => {
         this.cliente = {
           nombre: c.nombre,
           email: c.email,
@@ -274,12 +361,14 @@ export class ClienteFormComponent implements OnInit {
           this.extraerPaisDelTelefono(c.telefono);
         }
       });
-      this.historialService.obtenerPorEntidad('cliente', this.id).subscribe(data => this.historial.set(data));
+      this.historialService
+        .obtenerPorEntidad('cliente', this.id)
+        .subscribe((data) => this.historial.set(data));
     }
   }
 
   onPaisChange() {
-    const pais = COUNTRIES.find(p => p.code === this.paisSeleccionado);
+    const pais = COUNTRIES.find((p) => p.code === this.paisSeleccionado);
     this.paisActual.set(pais);
     this.telefonoError.set('');
   }
@@ -293,8 +382,7 @@ export class ClienteFormComponent implements OnInit {
         const numeroSinPais = telefonoE164.replace(/^\+\d{1,3}/, '');
         this.cliente.telefono = numeroSinPais;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   validarEmail() {
@@ -310,13 +398,13 @@ export class ClienteFormComponent implements OnInit {
 
   validarTelefono() {
     const telefonoLocal = (this.cliente.telefono || '').replace(/\D/g, '');
-    
+
     if (!telefonoLocal) {
       this.telefonoError.set('El teléfono es requerido');
       return;
     }
 
-    const pais = COUNTRIES.find(p => p.code === this.paisSeleccionado);
+    const pais = COUNTRIES.find((p) => p.code === this.paisSeleccionado);
     if (!pais) {
       this.telefonoError.set('País no válido');
       return;
@@ -325,10 +413,10 @@ export class ClienteFormComponent implements OnInit {
     const telefonoE164 = '+' + pais.dialCode + telefonoLocal;
 
     try {
-      if (!isValidPhoneNumber(telefonoE164, this.paisSeleccionado as any)) {
-        this.telefonoError.set(`Teléfono no válido para ${pais.name}`);
-        return;
-      }
+      // if (!isValidPhoneNumber(telefonoE164, this.paisSeleccionado as any)) {
+      //   this.telefonoError.set(`Teléfono no válido para ${pais.name}`);
+      //   return;
+      // }
       this.telefonoError.set('');
     } catch (e) {
       this.telefonoError.set('Error al validar teléfono');
@@ -337,7 +425,7 @@ export class ClienteFormComponent implements OnInit {
 
   obtenerTelefonoE164(): string {
     const telefonoLocal = (this.cliente.telefono || '').replace(/\D/g, '');
-    const pais = COUNTRIES.find(p => p.code === this.paisSeleccionado);
+    const pais = COUNTRIES.find((p) => p.code === this.paisSeleccionado);
     if (!pais || !telefonoLocal) return this.cliente.telefono || '';
     return '+' + pais.dialCode + telefonoLocal;
   }
@@ -380,12 +468,12 @@ export class ClienteFormComponent implements OnInit {
     if (this.editando && this.id) {
       this.clienteService.actualizar(this.id, clienteAEnviar).subscribe({
         next: () => this.router.navigate(['/clientes']),
-        error: (err) => this.error.set(err.error?.message || 'Error al actualizar')
+        error: (err) => this.error.set(err.error?.message || 'Error al actualizar'),
       });
     } else {
       this.clienteService.crear(clienteAEnviar).subscribe({
         next: () => this.router.navigate(['/clientes']),
-        error: (err) => this.error.set(err.error?.message || 'Error al crear')
+        error: (err) => this.error.set(err.error?.message || 'Error al crear'),
       });
     }
   }

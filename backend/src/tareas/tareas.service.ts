@@ -16,7 +16,7 @@ export class TareasService {
     private historialService: HistorialService,
   ) {}
 
-  async crear(dto: CrearTareaDto, usuarioNombre: string) {
+  async crear(dto: CrearTareaDto, usuarioNombre: string, usuarioId: number) {
     const proyecto = await this.proyectoRepo.findOne({
       where: { id: dto.proyectoId },
     });
@@ -29,7 +29,14 @@ export class TareasService {
       estado: EstadoTarea.PENDIENTE,
     });
     const guardada = await this.tareaRepo.save(nueva);
-    await this.historialService.registrar('tarea', guardada.id, usuarioNombre, 'crear', `Se creó la tarea "${guardada.descripcion}"`);
+    await this.historialService.registrar(
+      'tarea',
+      guardada.id,
+      usuarioNombre,
+      usuarioId,
+      'crear',
+      `Se creó la tarea "${guardada.descripcion}"`,
+    );
     return guardada;
   }
 
@@ -54,20 +61,39 @@ export class TareasService {
     return t;
   }
 
-  async editar(id: number, dto: EditarTareaDto, usuarioNombre: string) {
+  async editar(
+    id: number,
+    dto: EditarTareaDto,
+    usuarioNombre: string,
+    usuarioId: number,
+  ) {
     const existe = await this.buscarPorId(id);
     if (existe) {
-      await this.tareaRepo.update({ id }, dto as any);
-      await this.historialService.registrar('tarea', id, usuarioNombre, 'editar', `Se editó la tarea "${existe.descripcion}"`);
+      await this.tareaRepo.update({ id }, dto as Partial<Tarea>);
+      await this.historialService.registrar(
+        'tarea',
+        id,
+        usuarioNombre,
+        usuarioId,
+        'editar',
+        `Se editó la tarea "${existe.descripcion}"`,
+      );
       return this.buscarPorId(id);
     }
   }
 
-  async darDeBaja(id: number, usuarioNombre: string) {
+  async darDeBaja(id: number, usuarioNombre: string, usuarioId: number) {
     const existe = await this.buscarPorId(id);
     if (existe) {
       await this.tareaRepo.update({ id }, { estado: EstadoTarea.BAJA });
-      await this.historialService.registrar('tarea', id, usuarioNombre, 'darBaja', `Se dio de baja la tarea "${existe.descripcion}"`);
+      await this.historialService.registrar(
+        'tarea',
+        id,
+        usuarioNombre,
+        usuarioId,
+        'darBaja',
+        `Se dio de baja la tarea "${existe.descripcion}"`,
+      );
       return this.buscarPorId(id);
     }
   }

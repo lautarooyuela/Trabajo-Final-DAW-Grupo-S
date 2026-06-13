@@ -15,4 +15,8 @@ export class HistorialService {
   obtenerPorEntidadGeneral(entidad: string) {
     return this.http.get<Historial[]>(`${this.apiUrl}/${entidad}`);
   }
+
+  obtenerPorUsuario(usuarioId: number) {
+    return this.http.get<Historial[]>(`${this.apiUrl}/usuario/${usuarioId}`);
+  }
 }
