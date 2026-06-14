@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:local": "ng serve --proxy-config proxy.conf.json",
+    "start:dev": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "deploy": "npm run build && npm run nginx:limpiar && npm run nginx:llenar",
     "nginx:limpiar": "del /F /Q C:\\nginx-1.28.3\\html\\*",
